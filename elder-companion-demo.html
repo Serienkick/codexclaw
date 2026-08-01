@@ -553,6 +553,20 @@
   </div>
 
   <!-- ============ 开发者后台（仅开发者可见） ============ -->
+  <!-- 开发者登录（隐蔽入口连点解锁后进入此处，需校验账号密码） -->
+  <section class="view" id="devLogin">
+    <button class="back" onclick="go('welcome')">← 返回</button>
+    <div class="dev-head">
+      <div class="dt">🔒 开发者验证 <span class="lock">仅内部</span></div>
+      <div class="ds">请输入开发者账号与密码以进入后台。普通用户（老人/子女）<b>无需也无法</b>通过此验证。</div>
+    </div>
+    <div class="field"><label>账号</label><input id="devUser" placeholder="请输入账号" autocomplete="off"></div>
+    <div class="field"><label>密码</label><input id="devPass" type="password" placeholder="请输入密码" autocomplete="off"></div>
+    <button class="big-btn" style="background:#2B2B2B" onclick="devLogin()">🔓 进入开发者后台</button>
+    <div class="note">💡 账号 <b>admin</b> / 密码 <b>admin</b>。校验不通过将返回建档界面。</div>
+    <div class="link" onclick="go('welcome')">‹ 返回建档界面</div>
+  </section>
+
   <section class="view" id="devDb">
     <button class="back" onclick="go('welcome')">← 返回</button>
     <div class="dev-head">
@@ -775,7 +789,14 @@
     devTaps++;
     if(devTimer) clearTimeout(devTimer);
     devTimer=setTimeout(function(){devTaps=0;},8000); // 放宽到 8 秒，适配"间断点击"
-    if(devTaps>=5){ devTaps=0; clearTimeout(devTimer); renderDB(); go('devDb'); toast('🔓 开发者后台已解锁'); }
+    if(devTaps>=5){ devTaps=0; clearTimeout(devTimer); go('devLogin'); toast('🔓 请输入开发者密码'); }
+  }
+
+  function devLogin(){
+    var u=document.getElementById('devUser').value.trim();
+    var p=document.getElementById('devPass').value.trim();
+    if(u==='admin' && p==='admin'){ renderDB(); go('devDb'); toast('🔓 验证通过，欢迎开发者'); }
+    else { toast('你没有权限'); go('welcome'); }
   }
 
   tick(); setInterval(tick,1000);
