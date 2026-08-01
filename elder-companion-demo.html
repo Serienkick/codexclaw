@@ -558,12 +558,11 @@
     <button class="back" onclick="go('welcome')">← 返回</button>
     <div class="dev-head">
       <div class="dt">🔒 开发者验证 <span class="lock">仅内部</span></div>
-      <div class="ds">请输入开发者账号与密码以进入后台。普通用户（老人/子女）<b>无需也无法</b>通过此验证。</div>
+      <div class="ds">仅开发者可管理，普通用户无法通过此验证。</div>
     </div>
     <div class="field"><label>账号</label><input id="devUser" placeholder="请输入账号" autocomplete="off"></div>
     <div class="field"><label>密码</label><input id="devPass" type="password" placeholder="请输入密码" autocomplete="off"></div>
     <button class="big-btn" style="background:#2B2B2B" onclick="devLogin()">🔓 进入开发者后台</button>
-    <div class="note">💡 账号 <b>admin</b> / 密码 <b>admin</b>。校验不通过将返回建档界面。</div>
     <div class="link" onclick="go('welcome')">‹ 返回建档界面</div>
   </section>
 
