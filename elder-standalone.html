@@ -134,6 +134,20 @@
   .svc-card .sn{font-size:25px;font-weight:800;margin-top:10px;}
   .svc-card .sd{font-size:15px;color:var(--ink2);margin-top:4px;}
 
+  /* 退出 / 重新选择身份 */
+  #exitBtn{font-size:16px;color:#9A8E78;font-weight:700;padding:6px 12px;border-radius:999px;
+    background:rgba(0,0,0,.04);cursor:pointer;flex-shrink:0;}
+  #exitBtn:active{transform:scale(.95);}
+  .logo{text-align:center;margin:34px 0 12px;}
+  .logo .em{font-size:64px;} .logo .nm{font-size:30px;font-weight:800;margin-top:6px;}
+  .logo .ds{font-size:19px;color:var(--ink2);margin-top:8px;line-height:1.5;}
+  .role-card{background:var(--card);border:3px solid transparent;border-radius:var(--radius);
+    padding:24px;box-shadow:var(--shadow);cursor:pointer;margin-bottom:16px;transition:.15s;}
+  .role-card:active{transform:scale(.98);}
+  .role-card.sel{border-color:var(--warm);}
+  .role-card .ri{font-size:52px;} .role-card .rt{font-size:26px;font-weight:800;margin-top:8px;}
+  .role-card .rd{font-size:17px;color:var(--ink2);margin-top:4px;line-height:1.5;}
+
   /* 底部导航（仅长辈功能） */
   .tabbar{position:absolute;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #ECECEC;
     display:flex;justify-content:space-around;padding:10px 0 12px;z-index:15;}
@@ -158,7 +172,7 @@
 </head>
 <body>
 <div class="phone">
-  <div class="topbar"><span id="clock">--:--</span><span>👴 暖伴 · 长辈版</span></div>
+  <div class="topbar"><span id="clock">--:--</span><span><span style="margin-right:10px">👴 暖伴 · 长辈版</span><span id="exitBtn" onclick="confirmExit()">退出</span></span></div>
 
   <!-- 首页 -->
   <section class="view active" id="home">
@@ -273,6 +287,16 @@
     <div class="foot">便民服务为真实服务对接，由子女端统一管理进度</div>
   </section>
 
+  <!-- 重新选择身份（退出后） -->
+  <section class="view" id="reselect">
+    <div class="logo"><div class="em">🤝</div><div class="nm">重新选择身份</div>
+      <div class="ds">换个身份，<br>暖伴会为您切换到对应界面</div></div>
+    <div class="role-card" onclick="reselectRole('elder')"><div class="ri">👴</div><div class="rt">我是长辈，自己用</div>
+      <div class="rd">大字界面、语音播报、一键求助</div></div>
+    <div class="role-card" onclick="reselectRole('child')"><div class="ri">👧</div><div class="rt">我是子女，照顾爸妈</div>
+      <div class="rd">远程看板、异常推送（请打开「暖伴·子女端」）</div></div>
+  </section>
+
   <!-- 底部导航 -->
   <div class="tabbar" id="tabbar">
     <button class="tab on" onclick="tab('home',this)"><div class="ti">🏠</div>首页</button>
@@ -289,6 +313,12 @@
     <div class="ms">好久没见您动啦，点一下让我放心</div>
     <div class="mb"><button class="ok" onclick="modalOk()">我很好</button><button class="help" onclick="modalHelp()">需要求助</button></div>
   </div></div>
+
+  <div class="modal" id="exitModal"><div class="modal-box">
+    <div class="mt">退出当前账号？</div>
+    <div class="ms">退出后可重新选择身份</div>
+    <div class="mb"><button class="ok" onclick="doExit()">确定退出</button><button class="help" onclick="closeExit()">取消</button></div>
+  </div></div>
 </div>
 
 <script>
@@ -298,7 +328,9 @@
   function go(id){
     document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
     document.getElementById(id).classList.add('active');
-    syncTab(id); window.scrollTo(0,0); bump();
+    syncTab(id);
+    document.getElementById('tabbar').style.display = (id==='reselect')?'none':'';
+    window.scrollTo(0,0); bump();
   }
   function tab(id,el){
     document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
@@ -355,6 +387,15 @@
   function modalOk(){document.getElementById('modal').classList.remove('show');bump();toast('太好了，已记录您平安');}
   function modalHelp(){document.getElementById('modal').classList.remove('show');toast('已向家人发送求助！');}
   function svc(name){ toast('已提交【'+name+'】，已通知子女跟进 ✓'); }
+
+  /* 退出 / 重新选择身份 */
+  function confirmExit(){document.getElementById('exitModal').classList.add('show');}
+  function closeExit(){document.getElementById('exitModal').classList.remove('show');}
+  function doExit(){document.getElementById('exitModal').classList.remove('show');go('reselect');}
+  function reselectRole(r){
+    if(r==='elder'){go('home');toast('已进入长辈界面');}
+    else {toast('请打开「暖伴·子女端」App');}
+  }
 
   tick(); setInterval(tick,1000);
 </script>

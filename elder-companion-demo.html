@@ -300,11 +300,10 @@
 
   <!-- 欢迎 -->
   <section class="view active" id="welcome">
-    <div class="logo"><div class="em">🤝</div><div class="nm">暖伴</div>
+    <div class="logo"><div class="em" id="logoEm" onclick="devTap()">🤝</div><div class="nm">暖伴</div>
       <div class="ds">先认识一下您，<br>才好为您把功能调得刚刚好</div></div>
     <button class="big-btn warm" onclick="go('role')">开始建档 ›</button>
     <div class="note">📌 这一步会收集身份与基础信息，用于区分<b>老人端 / 子女端</b>，并存入用户数据库（开发者侧）。普通用户全程看不到数据库原始数据。</div>
-    <div class="link" onclick="renderDB();go('devDb')">🔒 开发者后台（仅内部可见）</div>
     <div class="foot">暖伴 · 完整演示 Demo</div>
   </section>
 
@@ -765,6 +764,15 @@
     }).join('');
   }
   function resetAll(){localStorage.removeItem(DB_KEY);toast('演示数据已清空');go('welcome');}
+
+  /* 开发者后台：隐蔽入口（间断连点首页 Logo 7 次解锁） */
+  var devTaps=0, devTimer=null;
+  function devTap(){
+    devTaps++;
+    if(devTimer) clearTimeout(devTimer);
+    devTimer=setTimeout(function(){devTaps=0;},3000); // 3 秒窗口内累计，允许间断点击
+    if(devTaps>=7){ devTaps=0; clearTimeout(devTimer); renderDB(); go('devDb'); toast('🔓 开发者后台已解锁'); }
+  }
 
   tick(); setInterval(tick,1000);
 </script>
