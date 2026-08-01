@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>暖伴 · 子女版（独立界面）</title>
+<style>
+  :root{
+    --bg:#F4F7FB; --card:#FFFFFF; --ink:#2B2B2B; --ink2:#6B6B6B;
+    --warm:#FF8A3D; --warm-soft:#FFE9D6;
+    --green:#2E9E83; --green-soft:#DCF3EC;
+    --blue:#3D83C2; --blue-soft:#DCEBFA;
+    --red:#E5484D; --red-soft:#FDEBEC;
+    --gold:#E0A23B;
+    --radius:22px; --shadow:0 8px 24px rgba(0,0,0,.08);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  body{margin:0;font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+    background:#D7DEE8;color:var(--ink);display:flex;justify-content:center;padding:16px;}
+  .phone{width:100%;max-width:430px;background:var(--bg);border-radius:36px;
+    box-shadow:0 20px 60px rgba(0,0,0,.25);overflow:hidden;min-height:880px;position:relative;}
+  .topbar{display:flex;justify-content:space-between;align-items:center;
+    padding:18px 24px 6px;font-size:18px;color:var(--ink2);font-weight:600;}
+  .view{display:none;padding:8px 20px 100px;}
+  .view.active{display:block;animation:fade .25s ease;}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+  .back{display:inline-flex;align-items:center;gap:8px;background:var(--card);color:var(--ink);
+    border:none;font-size:22px;font-weight:700;padding:12px 20px;border-radius:999px;
+    box-shadow:var(--shadow);cursor:pointer;margin-bottom:16px;}
+  .page-title{font-size:30px;font-weight:800;margin:4px 4px 18px;}
+  .sec-t{font-size:20px;font-weight:800;margin:18px 4px 12px;display:flex;align-items:center;gap:8px;}
+  .tag{font-size:13px;font-weight:800;padding:3px 10px;border-radius:999px;}
+  .tag.pro{background:var(--gold);color:#fff;}
+  .tag.free{background:#EEE7DA;color:#9A8E78;}
+  .note{font-size:15px;color:var(--ink2);line-height:1.6;margin-top:14px;background:var(--warm-soft);
+    border-radius:16px;padding:16px;}
+  .foot{text-align:center;color:var(--ink2);font-size:14px;margin-top:14px;}
+
+  .who{display:flex;align-items:center;gap:14px;background:var(--card);border-radius:var(--radius);
+    padding:18px;box-shadow:var(--shadow);margin:6px 0 18px;}
+  .ava{width:64px;height:64px;border-radius:18px;background:var(--warm-soft);display:flex;
+    align-items:center;justify-content:center;font-size:38px;flex-shrink:0;}
+  .who .wn{font-size:24px;font-weight:800;}
+  .who .ws{font-size:17px;color:var(--ink2);margin-top:3px;}
+  .who .live{margin-left:auto;background:var(--green-soft);color:var(--green);font-weight:800;
+    font-size:15px;padding:6px 14px;border-radius:999px;}
+
+  .stat4{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px;}
+  .stat{background:var(--card);border-radius:20px;padding:18px;box-shadow:var(--shadow);}
+  .stat .si{font-size:30px;} .stat .sl{font-size:16px;color:var(--ink2);margin-top:6px;}
+  .stat .sv{font-size:22px;font-weight:800;margin-top:2px;}
+  .stat .sv.g{color:var(--green);} .stat .sv.b{color:var(--blue);} .stat .sv.r{color:var(--red);}
+
+  .timeline{background:var(--card);border-radius:20px;padding:6px 20px;box-shadow:var(--shadow);}
+  .tl{display:flex;align-items:center;gap:14px;padding:16px 0;border-bottom:1px solid #F0EAE0;}
+  .tl:last-child{border-bottom:none;}
+  .tl .dot{width:14px;height:14px;border-radius:50%;flex-shrink:0;}
+  .tl .dot.ok{background:var(--green);} .tl .dot.no{background:#E2DccF;} .tl .dot.wait{background:var(--warm);}
+  .tl .tt{font-size:22px;font-weight:800;min-width:78px;}
+  .tl .tw{font-size:19px;color:var(--ink);flex:1;}
+  .tl .ts{font-size:15px;color:var(--ink2);font-weight:700;}
+  .tl .ts.g{color:var(--green);} .tl .ts.r{color:var(--red);}
+
+  .ai-card{background:linear-gradient(135deg,var(--blue),#2E6FB0);color:#fff;border-radius:var(--radius);
+    padding:20px;box-shadow:var(--shadow);margin-top:6px;cursor:pointer;}
+  .ai-card .at{font-size:22px;font-weight:800;}
+  .ai-card .as{font-size:16px;opacity:.95;margin-top:6px;line-height:1.5;}
+  .ai-card .ab{display:inline-block;margin-top:12px;background:#fff;color:var(--blue);font-weight:800;
+    font-size:17px;padding:8px 18px;border-radius:999px;}
+
+  .sim{width:100%;border:none;border-radius:var(--radius);padding:18px;font-size:20px;font-weight:800;
+    color:#fff;background:var(--red);box-shadow:var(--shadow);cursor:pointer;margin-top:16px;}
+  .sim:active{transform:scale(.98);}
+
+  /* 消息 */
+  .msg{display:flex;gap:14px;background:var(--card);border-radius:18px;padding:16px;box-shadow:var(--shadow);margin-bottom:12px;}
+  .msg.new{animation:pop .4s ease;}
+  @keyframes pop{from{transform:scale(.95);opacity:.4}to{transform:none;opacity:1}}
+  .msg .mi{font-size:30px;width:48px;text-align:center;flex-shrink:0;}
+  .msg .mc{flex:1;}
+  .msg .mt{font-size:19px;font-weight:800;}
+  .msg .md{font-size:16px;color:var(--ink2);margin-top:4px;line-height:1.5;}
+  .msg .mtime{font-size:14px;color:#B5B0A8;margin-top:6px;}
+  .msg .ico-r{background:var(--red-soft);} .msg .ico-g{background:var(--green-soft);} .msg .ico-b{background:var(--blue-soft);}
+
+  /* 照顾 */
+  .card{background:var(--card);border-radius:20px;padding:20px;box-shadow:var(--shadow);margin-bottom:16px;}
+  .card .ch{font-size:22px;font-weight:800;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+  .pill{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid #F0EAE0;}
+  .pill:last-child{border-bottom:none;}
+  .pill .pn{font-size:20px;font-weight:700;} .pill .ps{font-size:15px;color:var(--ink2);margin-top:2px;}
+  .add{display:flex;align-items:center;gap:10px;color:var(--blue);font-weight:800;font-size:19px;
+    cursor:pointer;margin-top:10px;}
+  .add .plus{width:36px;height:36px;border-radius:50%;background:var(--blue-soft);color:var(--blue);
+    display:flex;align-items:center;justify-content:center;font-size:24px;}
+  textarea{width:100%;border:2px solid #E6E0D6;border-radius:16px;padding:14px;font-size:19px;
+    font-family:inherit;resize:none;outline:none;}
+  textarea:focus{border-color:var(--blue);}
+  .send{margin-top:12px;width:100%;border:none;border-radius:14px;padding:14px;font-size:20px;
+    font-weight:800;color:#fff;background:var(--blue);cursor:pointer;}
+  .chip{display:inline-block;background:var(--warm-soft);color:var(--warm);font-weight:800;font-size:17px;
+    padding:10px 18px;border-radius:999px;margin:0 10px 10px 0;cursor:pointer;}
+  .chip:active{transform:scale(.96);}
+  .con{display:flex;align-items:center;gap:12px;padding:12px 0;}
+  .con .ca{width:46px;height:46px;border-radius:50%;background:var(--green-soft);color:var(--green);
+    display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+  .con .cn{font-size:20px;font-weight:800;} .con .cr{font-size:15px;color:var(--ink2);}
+
+  /* 会员 */
+  .vip-head{background:linear-gradient(135deg,var(--gold),#C9821F);color:#fff;border-radius:var(--radius);
+    padding:22px;box-shadow:var(--shadow);margin:6px 0 18px;}
+  .vip-head .vt{font-size:18px;opacity:.95;}
+  .vip-head .vn{font-size:28px;font-weight:800;margin-top:4px;}
+  .vip-head .vd{font-size:16px;opacity:.95;margin-top:4px;}
+  .plan{background:var(--card);border-radius:20px;padding:18px;box-shadow:var(--shadow);margin-bottom:14px;
+    border:2px solid transparent;}
+  .plan.rec{border-color:var(--gold);}
+  .plan .pr{display:flex;justify-content:space-between;align-items:center;}
+  .plan .pname{font-size:22px;font-weight:800;}
+  .plan .pprice{font-size:24px;font-weight:800;color:var(--warm);}
+  .plan .pprice small{font-size:14px;color:var(--ink2);font-weight:600;}
+  .plan .pdesc{font-size:16px;color:var(--ink2);margin:10px 0 4px;line-height:1.6;}
+  .plan ul{margin:8px 0 0;padding-left:20px;} .plan li{font-size:16px;margin:4px 0;}
+  .up{width:100%;border:none;border-radius:14px;padding:14px;font-size:20px;font-weight:800;color:#fff;
+    background:var(--gold);cursor:pointer;margin-top:14px;}
+  .up:active{transform:scale(.98);}
+  .up.ghost{background:#EFE9DD;color:var(--ink2);}
+
+  /* 底部导航（仅子女功能） */
+  .tabbar{position:absolute;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #ECECEC;
+    display:flex;justify-content:space-around;padding:10px 0 12px;z-index:15;}
+  .tab{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:13px;
+    color:var(--ink2);background:none;border:none;cursor:pointer;width:25%;}
+  .tab .ti{font-size:26px;} .tab.on{color:var(--blue);font-weight:800;}
+
+  .toast{position:absolute;left:50%;bottom:90px;transform:translateX(-50%) translateY(20px);
+    background:rgba(43,43,43,.94);color:#fff;font-size:19px;font-weight:700;padding:14px 24px;
+    border-radius:999px;opacity:0;pointer-events:none;transition:.25s;max-width:90%;text-align:center;z-index:30;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="topbar"><span id="clock">--:--</span><span>👧 暖伴 · 子女版</span></div>
+
+  <!-- 看板 -->
+  <section class="view active" id="board">
+    <div class="who">
+      <div class="ava">👴</div>
+      <div><div class="wn">王爷爷</div><div class="ws">82岁 · 独居 · 荆州</div></div>
+      <div class="live">● 守护中</div>
+    </div>
+    <div class="stat4">
+      <div class="stat"><div class="si">💊</div><div class="sl">今日吃药</div><div class="sv g">已服 1/1 ✓</div></div>
+      <div class="stat"><div class="si">🛡️</div><div class="sl">安全状态</div><div class="sv g">守护中</div></div>
+      <div class="stat"><div class="si">⏰</div><div class="sl">最后活跃</div><div class="sv b">刚刚</div></div>
+      <div class="stat"><div class="si">😊</div><div class="sl">今日心情</div><div class="sv b">不错</div></div>
+    </div>
+    <div class="sec-t">📋 今日时间线</div>
+    <div class="timeline">
+      <div class="tl"><div class="dot ok"></div><div class="tt">08:00</div><div class="tw">吃降压药（饭后）</div><div class="ts g">已服✓</div></div>
+      <div class="tl"><div class="dot wait"></div><div class="tt">10:30</div><div class="tw">喝一杯温水</div><div class="ts">待提醒</div></div>
+      <div class="tl"><div class="dot wait"></div><div class="tt">15:00</div><div class="tw">和老姐妹去公园散步</div><div class="ts">待提醒</div></div>
+      <div class="tl"><div class="dot wait"></div><div class="tt">21:30</div><div class="tw">准备睡觉</div><div class="ts">待提醒</div></div>
+    </div>
+    <div class="sec-t">🤖 AI 守护 <span class="tag pro">Pro</span></div>
+    <div class="ai-card" onclick="toast('已生成本周守护报告（Pro 演示）')">
+      <div class="at">本周 AI 守护报告</div>
+      <div class="as">用药依从率 90%、异常 1 次已确认安全、活动量偏少建议多散步。点开看完整解读 →</div>
+      <div class="ab">查看报告</div>
+    </div>
+    <button class="sim" onclick="pushDemo()">⚡ 演示：模拟收到一条实时推送</button>
+    <div class="foot">暖伴 · 子女版（提醒/娱乐/休息由长辈端使用）</div>
+  </section>
+
+  <!-- 消息 -->
+  <section class="view" id="msgs">
+    <button class="back" onclick="go('board')">← 返回</button>
+    <div class="sec-t">🔔 守护消息</div>
+    <div id="msgList">
+      <div class="msg"><div class="mi ico-g">✅</div><div class="mc"><div class="mt">已确认安全</div>
+        <div class="md">爸爸 30 分钟无操作，已点「我很好」报平安。</div><div class="mtime">今天 14:32</div></div></div>
+      <div class="msg"><div class="mi ico-r">⏰</div><div class="mc"><div class="mt">喝水提醒未确认</div>
+        <div class="md">10:30 的喝水提醒，爸爸还没在手机上勾选。</div><div class="mtime">今天 10:35</div></div></div>
+      <div class="msg"><div class="mi ico-b">💬</div><div class="mc"><div class="mt">留言已送达</div>
+        <div class="md">你发的「今天降温加衣」已显示在爸爸手机首页。</div><div class="mtime">今天 09:10</div></div></div>
+      <div class="msg"><div class="mi ico-g">🌙</div><div class="mc"><div class="mt">已按时睡觉</div>
+        <div class="md">昨晚 21:38 爸爸按了睡觉提醒，已休息。</div><div class="mtime">昨天 21:40</div></div></div>
+    </div>
+    <div class="note">💡 这些都是<b>微信订阅消息</b>：爸爸手机上的异常/提醒，会实时弹到你微信。免费版仅自己可见，<b>会员才能远程收推送</b>——这是最核心的付费点。</div>
+  </section>
+
+  <!-- 照顾 -->
+  <section class="view" id="setting">
+    <button class="back" onclick="go('board')">← 返回</button>
+    <div class="sec-t">⚙️ 远程照顾</div>
+    <div class="card">
+      <div class="ch">💊 用药 / 提醒计划</div>
+      <div class="pill"><div><div class="pn">降压药</div><div class="ps">每天 08:00 · 饭后</div></div><div class="ts g">开启</div></div>
+      <div class="pill"><div><div class="pn">喝温水</div><div class="ps">每天 10:30</div></div><div class="ts g">开启</div></div>
+      <div class="pill"><div><div class="pn">公园散步</div><div class="ps">每天 15:00</div></div><div class="ts g">开启</div></div>
+      <div class="add" onclick="addRemind()"><div class="plus">+</div>添加一条提醒</div>
+    </div>
+    <div class="card">
+      <div class="ch">💬 远程留言叮嘱</div>
+      <textarea id="noteInput" rows="2" placeholder="写一句给爸爸的话，会显示在他手机首页…"></textarea>
+      <button class="send" onclick="sendNote()">📨 发送到爸爸手机</button>
+    </div>
+    <div class="card">
+      <div class="ch">🎬 投喂他爱看的（Pro）</div>
+      <div style="font-size:16px;color:var(--ink2);margin-bottom:8px">挑一段发过去，直接进爸爸的「智能推荐」里：</div>
+      <span class="chip" onclick="feed('京剧·红灯记')">京剧·红灯记</span>
+      <span class="chip" onclick="feed('相声·卖布头')">相声·卖布头</span>
+      <span class="chip" onclick="feed('老歌·茉莉花')">老歌·茉莉花</span>
+      <span class="chip" onclick="feed('养生·八段锦')">养生·八段锦</span>
+    </div>
+    <div class="card">
+      <div class="ch">📞 紧急联系人</div>
+      <div class="con"><div class="ca">👧</div><div><div class="cn">小敏（女儿）</div><div class="cr">已绑定 · 主联系人</div></div></div>
+      <div class="con"><div class="ca">👦</div><div><div class="cn">小军（儿子）</div><div class="cr">已绑定</div></div></div>
+      <div class="add" onclick="toast('添加紧急联系人（演示）')"><div class="plus">+</div>添加联系人</div>
+    </div>
+  </section>
+
+  <!-- 会员 -->
+  <section class="view" id="vip">
+    <button class="back" onclick="go('board')">← 返回</button>
+    <div class="vip-head">
+      <div class="vt">当前版本</div>
+      <div class="vn" id="curName">免费版</div>
+      <div class="vd" id="curDesc">基础提醒 + 一键求助，仅老人自己用</div>
+    </div>
+    <div class="plan" id="pFree">
+      <div class="pr"><div class="pname">免费版</div><div class="pprice">¥0 <small>/月</small></div></div>
+      <div class="pdesc">拉新用，先把老人用好。</div>
+      <ul><li>基础提醒 + 一键求助</li><li>安全守护（无活动确认 / 报平安）</li><li>仅本人手机可见</li></ul>
+    </div>
+    <div class="plan rec" id="pBasic">
+      <div class="pr"><div class="pname">👍 基础会员</div><div class="pprice">¥9.9 <small>/月</small></div></div>
+      <div class="pdesc">子女最该买的——远程安心。</div>
+      <ul><li>✅ 远程实时看板（吃药/活跃/安全）</li><li>✅ 异常实时推送到你微信</li><li>✅ 多紧急联系人轮询</li></ul>
+      <button class="up" onclick="upgrade('basic')">升级基础会员</button>
+    </div>
+    <div class="plan" id="pPro">
+      <div class="pr"><div class="pname">⭐ Pro 会员</div><div class="pprice">¥19.9 <small>/月</small></div></div>
+      <div class="pdesc">被照顾得更细，自己更省心。</div>
+      <ul><li>✅ 含基础会员全部</li><li>✅ AI 每周守护报告</li><li>✅ 远程「投喂」视频/戏段</li><li>✅ 适老 AI 语音陪聊无限</li></ul>
+      <button class="up" onclick="upgrade('pro')">升级 Pro 会员</button>
+    </div>
+    <div class="plan" id="pHw">
+      <div class="pr"><div class="pname">🔗 硬件套餐</div><div class="pprice">¥29.9 <small>/月起</small></div></div>
+      <div class="pdesc">软硬一体，安全再加一层。</div>
+      <ul><li>✅ 含 Pro 全部</li><li>✅ 连手环：跌倒自动求助</li><li>✅ 实时定位 + 电子围栏</li></ul>
+      <button class="up ghost" onclick="toast('硬件套餐需搭配手环（第二阶段）')">了解硬件套餐</button>
+    </div>
+    <div class="note">💡 定价参考市场 9.9–39/月。<b>转化漏斗</b>：抖音发「你在加班，谁看顾独居的妈？」→ 引流进 CodexClaw 群 → 免费版试用 → 升级月度会员。</div>
+    <div class="foot">暖伴 · 子女版守护原型</div>
+  </section>
+
+  <!-- 底部导航 -->
+  <div class="tabbar" id="tabbar">
+    <button class="tab on" onclick="tab('board',this)"><div class="ti">📊</div>看板</button>
+    <button class="tab" onclick="tab('msgs',this)"><div class="ti">🔔</div>消息</button>
+    <button class="tab" onclick="tab('setting',this)"><div class="ti">⚙️</div>照顾</button>
+    <button class="tab" onclick="tab('vip',this)"><div class="ti">💎</div>会员</button>
+  </div>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+  function pad(n){return n<10?'0'+n:n;}
+  function tick(){
+    var d=new Date(),h=d.getHours(),m=d.getMinutes();
+    var ap=h<12?'上午':(h<18?'下午':'晚上');
+    document.getElementById('clock').textContent=ap+' '+h+':'+pad(m);
+  }
+  function go(id){
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    syncTab(id); window.scrollTo(0,0);
+  }
+  function tab(id,el){
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+    el.classList.add('on'); window.scrollTo(0,0);
+  }
+  function syncTab(id){
+    var map={board:0,msgs:1,setting:2,vip:3};
+    var i=map[id]; if(i===undefined) return;
+    document.querySelectorAll('.tab').forEach((t,idx)=>t.classList.toggle('on',idx===i));
+  }
+  function pushDemo(){
+    var list=document.getElementById('msgList');
+    var d=new Date();
+    var node=document.createElement('div');
+    node.className='msg new';
+    node.innerHTML='<div class="mi ico-r">🆘</div><div class="mc"><div class="mt">收到求助！</div>'+
+      '<div class="md">爸爸按了一键求助，位置：荆州·家中。已同时通知小军。</div>'+
+      '<div class="mtime">刚刚 '+d.getHours()+':'+pad(d.getMinutes())+'</div></div>';
+    list.insertBefore(node,list.firstChild);
+    var s=document.querySelectorAll('.stat .sv');
+    if(s[1]){s[1].textContent='求助中!'; s[1].className='sv r';}
+    toast('⚡ 实时推送已送达你的微信（演示）');
+    document.querySelectorAll('.tab')[1].classList.add('on');
+    document.querySelectorAll('.tab')[0].classList.remove('on');
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+    document.getElementById('msgs').classList.add('active');
+  }
+  function addRemind(){
+    var card=document.querySelector('#setting .card');
+    var p=document.createElement('div');
+    p.className='pill';
+    p.innerHTML='<div><div class="pn">新提醒</div><div class="ps">每天 --:--（点此可改时间）</div></div><div class="ts g">开启</div>';
+    card.insertBefore(p,card.querySelector('.add'));
+    toast('已添加一条提醒（演示）');
+  }
+  function sendNote(){
+    var v=document.getElementById('noteInput').value.trim();
+    if(!v){toast('先写点什么吧～');return;}
+    document.getElementById('noteInput').value='';
+    toast('已发送到爸爸手机首页 ✓');
+  }
+  function feed(name){ toast('已投喂：'+name+'（进爸爸的智能推荐）'); }
+  function upgrade(level){
+    var name,desc;
+    if(level==='basic'){name='基础会员';desc='远程看板 + 异常推送，已开通';}
+    else {name='Pro 会员';desc='AI周报 + 投喂视频 + 语音陪聊，已开通';}
+    document.getElementById('curName').textContent=name;
+    document.getElementById('curDesc').textContent=desc;
+    toast('🎉 已开通'+name+'（演示）');
+  }
+  var t;
+  function toast(msg){
+    var el=document.getElementById('toast');
+    el.textContent=msg; el.classList.add('show');
+    clearTimeout(t); t=setTimeout(()=>el.classList.remove('show'),1900);
+  }
+  tick(); setInterval(tick,1000);
+</script>
+</body>
+</html>

@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>暖伴 · 长辈版（独立界面）</title>
+<style>
+  :root{
+    --bg:#FFF8F0; --card:#FFFFFF; --ink:#2B2B2B; --ink2:#6B6B6B;
+    --warm:#FF8A3D; --warm-soft:#FFE9D6;
+    --green:#2E9E83; --green-soft:#DCF3EC;
+    --blue:#3D83C2; --blue-soft:#DCEBFA;
+    --red:#E5484D; --red-soft:#FDEBEC;
+    --gold:#E0A23B;
+    --radius:24px; --shadow:0 8px 24px rgba(0,0,0,.08);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  body{margin:0;font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+    background:#E9E4DC;color:var(--ink);display:flex;justify-content:center;padding:16px;}
+  .phone{width:100%;max-width:430px;background:var(--bg);border-radius:36px;
+    box-shadow:0 20px 60px rgba(0,0,0,.25);overflow:hidden;min-height:880px;position:relative;}
+  .topbar{display:flex;justify-content:space-between;align-items:center;
+    padding:18px 24px 6px;font-size:18px;color:var(--ink2);font-weight:600;}
+  .view{display:none;padding:8px 20px 100px;}
+  .view.active{display:block;animation:fade .25s ease;}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+  .back{display:inline-flex;align-items:center;gap:8px;background:var(--card);color:var(--ink);
+    border:none;font-size:22px;font-weight:700;padding:12px 20px;border-radius:999px;
+    box-shadow:var(--shadow);cursor:pointer;margin-bottom:16px;}
+  .page-title{font-size:30px;font-weight:800;margin:4px 4px 18px;}
+  .sec-t{font-size:20px;font-weight:800;margin:18px 4px 12px;display:flex;align-items:center;gap:8px;}
+  .tag{font-size:13px;font-weight:800;padding:3px 10px;border-radius:999px;}
+  .tag.ok{background:var(--green-soft);color:var(--green);}
+  .tag.hw{background:#EEE7DA;color:#9A8E78;font-size:14px;}
+  .note{font-size:15px;color:var(--ink2);line-height:1.6;margin-top:14px;background:var(--warm-soft);
+    border-radius:16px;padding:16px;}
+  .foot{text-align:center;color:var(--ink2);font-size:14px;margin-top:16px;}
+
+  /* 首页 */
+  .greet{font-size:30px;font-weight:800;margin:10px 4px 4px;line-height:1.3;}
+  .greet-sub{font-size:20px;color:var(--ink2);margin:0 4px 14px;}
+  .safe-bar{background:var(--green-soft);color:var(--green);border-radius:999px;
+    padding:16px 20px;font-size:20px;font-weight:800;margin:0 4px 14px;cursor:pointer;
+    display:flex;align-items:center;gap:8px;}
+  .safe-bar:active{transform:scale(.98);}
+  .hero-card{background:linear-gradient(135deg,var(--warm),#FF6B3D);color:#fff;
+    border-radius:var(--radius);padding:24px;box-shadow:var(--shadow);margin-bottom:22px;}
+  .hero-card .label{font-size:20px;opacity:.95;}
+  .hero-card .big{font-size:30px;font-weight:800;margin-top:6px;line-height:1.4;}
+  .hero-card .small{font-size:20px;opacity:.95;margin-top:10px;}
+  .speak{margin-top:16px;background:#fff;color:var(--warm);border:none;font-size:22px;
+    font-weight:800;padding:14px 24px;border-radius:999px;box-shadow:var(--shadow);cursor:pointer;}
+  .speak:active{transform:scale(.96);}
+  .grid4{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .mod{background:var(--card);border-radius:var(--radius);padding:20px 10px;text-align:center;
+    box-shadow:var(--shadow);cursor:pointer;transition:transform .12s;}
+  .mod:active{transform:scale(.96);}
+  .mod .ico{font-size:48px;line-height:1;} .mod .name{font-size:26px;font-weight:800;margin-top:10px;}
+  .mod .desc{font-size:16px;color:var(--ink2);margin-top:4px;}
+
+  /* 提醒 */
+  .remind-item{background:var(--card);border-radius:20px;padding:20px;display:flex;
+    align-items:center;gap:16px;box-shadow:var(--shadow);margin-bottom:14px;}
+  .remind-item .time{font-size:26px;font-weight:800;min-width:110px;}
+  .remind-item .what{flex:1;font-size:24px;font-weight:700;}
+  .check{width:54px;height:54px;border-radius:50%;border:4px solid var(--green);
+    display:flex;align-items:center;justify-content:center;font-size:30px;color:#fff;background:#fff;cursor:pointer;}
+  .check.done{background:var(--green);}
+  .check.done::after{content:"\2713";}
+  .family-note{background:var(--blue-soft);border-radius:var(--radius);padding:20px;margin:18px 0;}
+  .family-note .who{font-size:20px;color:var(--blue);font-weight:800;margin-bottom:6px;}
+  .family-note .txt{font-size:24px;font-weight:700;line-height:1.5;}
+  .sos-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:18px;}
+  .sos-btn{border:none;border-radius:var(--radius);padding:24px;font-size:26px;font-weight:800;
+    color:#fff;box-shadow:var(--shadow);cursor:pointer;}
+  .sos-btn.call{background:var(--green);} .sos-btn.help{background:var(--red);}
+
+  /* 娱乐 */
+  .smart-card{background:linear-gradient(135deg,var(--blue),#2E6FB0);color:#fff;border-radius:var(--radius);
+    padding:22px;box-shadow:var(--shadow);margin-bottom:14px;cursor:pointer;}
+  .smart-card .smart-tag{font-size:20px;opacity:.95;}
+  .smart-card .smart-t{font-size:27px;font-weight:800;margin-top:6px;line-height:1.35;}
+  .smart-card .smart-s{font-size:19px;opacity:.95;margin-top:8px;line-height:1.5;}
+  .smart-card .smart-play{display:inline-block;margin-top:14px;background:#fff;color:var(--blue);
+    font-size:22px;font-weight:800;padding:12px 22px;border-radius:999px;}
+  .voice-btn{width:100%;border:none;border-radius:var(--radius);padding:20px;font-size:22px;
+    font-weight:800;color:var(--warm);background:var(--warm-soft);cursor:pointer;margin-bottom:6px;}
+  .voice-btn:active{transform:scale(.98);}
+  .audio-card{background:var(--card);border-radius:20px;padding:20px;display:flex;
+    align-items:center;gap:16px;box-shadow:var(--shadow);margin-bottom:14px;cursor:pointer;}
+  .audio-card .pl{width:64px;height:64px;border-radius:50%;background:var(--warm-soft);
+    color:var(--warm);display:flex;align-items:center;justify-content:center;font-size:30px;flex-shrink:0;}
+  .audio-card .t{font-size:24px;font-weight:800;}
+  .audio-card .s{font-size:18px;color:var(--ink2);}
+  .game-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:8px;}
+  .game{background:var(--card);border-radius:20px;padding:20px;text-align:center;
+    box-shadow:var(--shadow);cursor:pointer;}
+  .game .gi{font-size:42px;} .game .gn{font-size:22px;font-weight:800;margin-top:8px;}
+
+  /* 休息 */
+  .rest-item{background:var(--card);border-radius:20px;padding:22px;display:flex;
+    align-items:center;justify-content:space-between;box-shadow:var(--shadow);margin-bottom:14px;}
+  .rest-item .rt{font-size:24px;font-weight:800;}
+  .rest-item .rs{font-size:18px;color:var(--ink2);margin-top:4px;}
+  .switch{width:84px;height:48px;border-radius:999px;background:#D9D4CC;position:relative;
+    cursor:pointer;flex-shrink:0;transition:background .2s;}
+  .switch.on{background:var(--green);}
+  .switch::after{content:"";position:absolute;top:4px;left:4px;width:40px;height:40px;
+    border-radius:50%;background:#fff;transition:left .2s;}
+  .switch.on::after{left:40px;}
+
+  /* 安全 */
+  .status-card{background:var(--card);border-radius:20px;padding:22px;box-shadow:var(--shadow);margin-bottom:14px;}
+  .status-card .row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;}
+  .status-card .lab{font-size:22px;color:var(--ink2);}
+  .status-card .val{font-size:24px;font-weight:800;}
+  .monitor{background:var(--card);border-radius:20px;padding:6px 22px;box-shadow:var(--shadow);margin-bottom:14px;}
+  .monitor .m{display:flex;justify-content:space-between;align-items:center;padding:18px 0;border-bottom:1px solid #F0EAE0;}
+  .monitor .m:last-child{border-bottom:none;}
+  .monitor .mi{font-size:23px;font-weight:800;}
+  .monitor .ms{font-size:16px;color:var(--ink2);margin-top:2px;}
+  .peace-btn{width:100%;border:none;border-radius:var(--radius);padding:26px;font-size:28px;
+    font-weight:800;color:#fff;background:var(--green);box-shadow:var(--shadow);cursor:pointer;margin-top:4px;}
+  .peace-btn:active{transform:scale(.98);}
+  .sim-btn{width:100%;border:none;border-radius:var(--radius);padding:20px;font-size:22px;
+    font-weight:800;color:var(--red);background:#FDEBEC;cursor:pointer;margin-top:14px;}
+
+  /* 便民 */
+  .svc-card{background:var(--card);border-radius:var(--radius);padding:22px 14px;text-align:center;
+    box-shadow:var(--shadow);cursor:pointer;transition:transform .12s;}
+  .svc-card:active{transform:scale(.96);}
+  .svc-card .si{font-size:46px;line-height:1;}
+  .svc-card .sn{font-size:25px;font-weight:800;margin-top:10px;}
+  .svc-card .sd{font-size:15px;color:var(--ink2);margin-top:4px;}
+
+  /* 底部导航（仅长辈功能） */
+  .tabbar{position:absolute;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #ECECEC;
+    display:flex;justify-content:space-around;padding:10px 0 12px;z-index:15;}
+  .tab{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:13px;
+    color:var(--ink2);background:none;border:none;cursor:pointer;}
+  .tab .ti{font-size:24px;} .tab.on{color:var(--warm);font-weight:800;}
+
+  .toast{position:absolute;left:50%;bottom:100px;transform:translateX(-50%) translateY(20px);
+    background:rgba(43,43,43,.94);color:#fff;font-size:19px;font-weight:700;padding:14px 24px;
+    border-radius:999px;opacity:0;pointer-events:none;transition:.25s;max-width:90%;text-align:center;z-index:30;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  .modal{position:absolute;inset:0;background:rgba(43,43,43,.6);display:none;
+    align-items:center;justify-content:center;z-index:20;}
+  .modal.show{display:flex;animation:fade .2s ease;}
+  .modal-box{background:#fff;border-radius:var(--radius);padding:32px 26px;width:86%;text-align:center;box-shadow:var(--shadow);}
+  .modal-box .mt{font-size:34px;font-weight:800;margin-bottom:10px;}
+  .modal-box .ms{font-size:22px;color:var(--ink2);margin-bottom:24px;}
+  .modal-box .mb{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .modal-box button{border:none;border-radius:18px;padding:24px;font-size:26px;font-weight:800;color:#fff;cursor:pointer;}
+  .modal-box .ok{background:var(--green);} .modal-box .help{background:var(--red);}
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="topbar"><span id="clock">--:--</span><span>👴 暖伴 · 长辈版</span></div>
+
+  <!-- 首页 -->
+  <section class="view active" id="home">
+    <div class="greet" id="elGreet">王爷爷，您好 👴</div>
+    <div class="greet-sub" id="dateLine">今天天气晴，22°C，适合散步</div>
+    <div class="safe-bar" onclick="go('safety')">🛡️ 守护中 · 最后活跃 <span id="lastActive">刚刚</span> · 今日已报平安 ✓ ▸</div>
+    <div class="hero-card">
+      <div class="label">🕐 现在该做什么</div>
+      <div class="big" id="nowDo">正在为您判断…</div>
+      <div class="small" id="nowTime">--:--</div>
+      <button class="speak" onclick="speak()">🔊 念给我听</button>
+    </div>
+    <div class="grid4">
+      <div class="mod" onclick="go('reminder')"><div class="ico">🔔</div><div class="name">提醒</div><div class="desc">不忘事</div></div>
+      <div class="mod" onclick="go('fun')"><div class="ico">🎵</div><div class="name">娱乐</div><div class="desc">智能推荐</div></div>
+      <div class="mod" onclick="go('rest')"><div class="ico">😴</div><div class="name">休息</div><div class="desc">养精神</div></div>
+      <div class="mod" onclick="go('safety')"><div class="ico">🛡️</div><div class="name">安全</div><div class="desc">实时守护</div></div>
+    </div>
+    <div class="sec-t" style="margin-top:22px">🛎️ 便民服务</div>
+    <div class="grid4">
+      <div class="mod" onclick="go('service')"><div class="ico">📦</div><div class="name">快递代取</div><div class="desc">帮取快递</div></div>
+      <div class="mod" onclick="go('service')"><div class="ico">🩺</div><div class="name">医师到家</div><div class="desc">上门问诊</div></div>
+    </div>
+    <div class="foot">暖伴 · 长辈版（消息/看板/会员均由子女端管理）</div>
+  </section>
+
+  <!-- 提醒 -->
+  <section class="view" id="reminder">
+    <button class="back" onclick="go('home')">← 返回</button>
+    <div class="page-title">🔔 今日提醒</div>
+    <div class="remind-item"><div class="time">08:00</div><div class="what">吃降压药（饭后）</div><div class="check done" onclick="toggle(this)"></div></div>
+    <div class="remind-item"><div class="time">10:30</div><div class="what">喝一杯温水</div><div class="check" onclick="toggle(this)"></div></div>
+    <div class="remind-item"><div class="time">15:00</div><div class="what">和老姐妹去公园散步</div><div class="check" onclick="toggle(this)"></div></div>
+    <div class="family-note"><div class="who">👧 女儿 小敏 留言</div><div class="txt">"爸，今天降温到 18 度，出门记得穿那件厚外套～"</div></div>
+    <div class="sos-row">
+      <button class="sos-btn call" onclick="toast('正在呼叫 女儿小敏 …')">📞 呼叫子女</button>
+      <button class="sos-btn help" onclick="toast('已向家人发送求助！')">🆘 一键求助</button>
+    </div>
+  </section>
+
+  <!-- 娱乐 -->
+  <section class="view" id="fun">
+    <button class="back" onclick="go('home')">← 返回</button>
+    <div class="page-title">🎵 小娱乐</div>
+    <div class="smart-card" onclick="play(this)">
+      <div class="smart-tag">🎬 智能为您推荐</div>
+      <div class="smart-t">京剧《红灯记》· 痛说革命家史</div>
+      <div class="smart-s">根据您常听戏曲的习惯，今天先播这个</div>
+      <div class="smart-play">▶ 一键播放</div>
+    </div>
+    <button class="voice-btn" onclick="voicePick()">🎙️ 语音点播（说"我要听相声"）</button>
+    <div class="page-title" style="margin-top:22px;font-size:24px">💡 猜您喜欢</div>
+    <div class="audio-card" onclick="play(this)"><div class="pl">▶</div><div><div class="t">京剧 · 红灯记</div><div class="s">因为您常听戏曲</div></div></div>
+    <div class="audio-card" onclick="play(this)"><div class="pl">▶</div><div><div class="t">相声 · 卖布头</div><div class="s">马三立</div></div></div>
+    <div class="audio-card" onclick="play(this)"><div class="pl">▶</div><div><div class="t">老歌 · 茉莉花</div><div class="s">轻音乐</div></div></div>
+    <div class="page-title" style="margin-top:22px">🎮 动动脑</div>
+    <div class="game-grid">
+      <div class="game" onclick="toast('猜歌名：播放一段，猜是哪首老歌')"><div class="gi">🎤</div><div class="gn">猜歌名</div></div>
+      <div class="game" onclick="toast('象棋残局：一步一步教您走')"><div class="gi">♟️</div><div class="gn">象棋残局</div></div>
+      <div class="game" onclick="toast('拼图：把全家福拼回来')"><div class="gi">🧩</div><div class="gn">亲情拼图</div></div>
+      <div class="game" onclick="toast('翻牌：锻炼记忆力小游戏')"><div class="gi">🃏</div><div class="gn">记忆力翻牌</div></div>
+    </div>
+  </section>
+
+  <!-- 休息 -->
+  <section class="view" id="rest">
+    <button class="back" onclick="go('home')">← 返回</button>
+    <div class="page-title">😴 休息作息</div>
+    <div class="rest-item"><div><div class="rt">🌅 起床提醒</div><div class="rs">每天早上 7:00</div></div><div class="switch on" onclick="sw(this)"></div></div>
+    <div class="rest-item"><div><div class="rt">☀️ 午休提醒</div><div class="rs">每天中午 12:30</div></div><div class="switch on" onclick="sw(this)"></div></div>
+    <div class="rest-item"><div><div class="rt">🌙 睡觉提醒</div><div class="rs">每天晚上 21:30</div></div><div class="switch on" onclick="sw(this)"></div></div>
+    <div class="rest-item"><div><div class="rt">🪑 久坐起身</div><div class="rs">坐满 1 小时提醒活动</div></div><div class="switch" onclick="sw(this)"></div></div>
+    <div class="page-title" style="margin-top:22px">🎧 助眠放松</div>
+    <div class="audio-card" onclick="play(this)"><div class="pl">▶</div><div><div class="t">雨声白噪音</div><div class="s">帮助入睡</div></div></div>
+    <div class="audio-card" onclick="play(this)"><div class="pl">▶</div><div><div class="t">轻音乐 · 月光</div><div class="s">舒缓放松</div></div></div>
+  </section>
+
+  <!-- 安全 -->
+  <section class="view" id="safety">
+    <button class="back" onclick="go('home')">← 返回</button>
+    <div class="page-title">🛡️ 安全守护</div>
+    <div class="status-card">
+      <div class="row"><span class="lab">最后活跃</span><span class="val" id="lastActive2">刚刚</span></div>
+      <div class="row"><span class="lab">今日报平安</span><span class="val" style="color:var(--green)">✓ 已报</span></div>
+      <div class="row"><span class="lab">守护状态</span><span class="tag ok">实时监听中</span></div>
+    </div>
+    <div class="monitor">
+      <div class="m"><div><div class="mi">⌚ 跌倒监测</div><div class="ms">剧烈摔倒自动求助</div></div>
+        <div style="display:flex;align-items:center;gap:8px"><span class="tag hw">需手环</span><div class="switch on" onclick="sw(this)"></div></div></div>
+      <div class="m"><div><div class="mi">⏳ 长时间无活动</div><div class="ms">久未操作主动确认安全</div></div><div class="switch on" onclick="sw(this)"></div></div>
+      <div class="m"><div><div class="mi">📍 离家围栏</div><div class="ms">走出常驻区域即提醒</div></div>
+        <div style="display:flex;align-items:center;gap:8px"><span class="tag hw">需GPS</span><div class="switch on" onclick="sw(this)"></div></div></div>
+    </div>
+    <button class="peace-btn" onclick="peace()">✋ 我很好 · 报平安</button>
+    <button class="sim-btn" onclick="showCheck()">▶ 演示：模拟 30 分钟没动静</button>
+    <div class="note">💡 说明：<b>无活动确认、报平安、一键求助</b> 纯软件就能做；<b>跌倒监测、离家围栏</b> 需搭配手环 / GPS 硬件，属第二阶段。本界面只服务长辈本人，看不到任何数据库与子女端设置。</div>
+  </section>
+
+  <!-- 便民服务 -->
+  <section class="view" id="service">
+    <button class="back" onclick="go('home')">← 返回</button>
+    <div class="page-title">🛎️ 便民服务</div>
+    <div class="note">点点就能办，提交后<b>子女或平台服务人员</b>会帮您跟进，进度可在首页守护条下方查看。全部免费，长辈端不收费。</div>
+    <div class="grid4">
+      <div class="svc-card" onclick="svc('一键快递代取')"><div class="si">📦</div><div class="sn">快递代取</div><div class="sd">帮取快递柜/驿站</div></div>
+      <div class="svc-card" onclick="svc('叫主治医师到家')"><div class="si">🩺</div><div class="sn">医师到家</div><div class="sd">上门问诊开药</div></div>
+      <div class="svc-card" onclick="svc('一键叫车')"><div class="si">🚕</div><div class="sn">一键叫车</div><div class="sd">接送回家</div></div>
+      <div class="svc-card" onclick="svc('跑腿买药')"><div class="si">💊</div><div class="sn">跑腿买药</div><div class="sd">代买配送</div></div>
+      <div class="svc-card" onclick="svc('家政保洁')"><div class="si">🧹</div><div class="sn">家政保洁</div><div class="sd">打扫/做饭</div></div>
+      <div class="svc-card" onclick="svc('社区订餐')"><div class="si">🍚</div><div class="sn">社区订餐</div><div class="sd">营养餐配送</div></div>
+    </div>
+    <div class="foot">便民服务为真实服务对接，由子女端统一管理进度</div>
+  </section>
+
+  <!-- 底部导航 -->
+  <div class="tabbar" id="tabbar">
+    <button class="tab on" onclick="tab('home',this)"><div class="ti">🏠</div>首页</button>
+    <button class="tab" onclick="tab('reminder',this)"><div class="ti">🔔</div>提醒</button>
+    <button class="tab" onclick="tab('fun',this)"><div class="ti">🎵</div>娱乐</button>
+    <button class="tab" onclick="tab('rest',this)"><div class="ti">😴</div>休息</button>
+    <button class="tab" onclick="tab('safety',this)"><div class="ti">🛡️</div>安全</button>
+    <button class="tab" onclick="tab('service',this)"><div class="ti">🛎️</div>便民</button>
+  </div>
+
+  <div class="toast" id="toast"></div>
+  <div class="modal" id="modal"><div class="modal-box">
+    <div class="mt">王爷爷，您还好吗？</div>
+    <div class="ms">好久没见您动啦，点一下让我放心</div>
+    <div class="mb"><button class="ok" onclick="modalOk()">我很好</button><button class="help" onclick="modalHelp()">需要求助</button></div>
+  </div></div>
+</div>
+
+<script>
+  function pad(n){return n<10?'0'+n:n;}
+  function toast(msg){var el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');
+    clearTimeout(window._t);window._t=setTimeout(()=>el.classList.remove('show'),1900);}
+  function go(id){
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    syncTab(id); window.scrollTo(0,0); bump();
+  }
+  function tab(id,el){
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+    el.classList.add('on'); window.scrollTo(0,0); bump();
+  }
+  function syncTab(id){
+    var map={home:0,reminder:1,fun:2,rest:3,safety:4,service:5};
+    var i=map[id]; if(i===undefined) return;
+    document.querySelectorAll('.tab').forEach((t,idx)=>t.classList.toggle('on',idx===i));
+  }
+  function tick(){
+    var d=new Date(),h=d.getHours(),m=d.getMinutes();
+    var ap=h<12?'上午':(h<18?'下午':'晚上');
+    document.getElementById('clock').textContent=ap+' '+h+':'+pad(m);
+    document.getElementById('nowTime').textContent='现在 '+h+':'+pad(m);
+    computeNow(h,m);
+  }
+  function computeNow(h){
+    var msg;
+    if(h<7) msg='还没到起床时间，再睡会儿～';
+    else if(h<8) msg='该起床啦，先伸个懒腰';
+    else if(h<10) msg='记得吃早饭，8点要吃降压药';
+    else if(h<12) msg='该喝一杯温水，起来活动活动';
+    else if(h<13) msg='该吃午饭，然后午休一会儿';
+    else if(h<15) msg='午休后精神好，可以听听戏';
+    else if(h<18) msg='该和老姐妹去公园散步啦';
+    else if(h<21) msg='吃晚饭，看看电视放松下';
+    else if(h<23) msg='该准备睡觉啦，别熬太晚';
+    else msg='该休息了，晚安王爷爷';
+    document.getElementById('nowDo').textContent=msg;
+  }
+  function speak(){
+    var txt=(document.getElementById('nowDo').textContent||'')+'。';
+    try{ if('speechSynthesis' in window){var u=new SpeechSynthesisUtterance(txt);
+      u.lang='zh-CN';u.rate=0.9; speechSynthesis.cancel(); speechSynthesis.speak(u); toast('正在念给您听…');
+    } else toast('当前环境不支持语音'); }catch(e){ toast('语音不可用'); }
+  }
+  function bump(){
+    document.getElementById('lastActive').textContent='刚刚';
+    document.getElementById('lastActive2').textContent='刚刚';
+  }
+  document.addEventListener('click',bump);
+  function toggle(el){el.classList.toggle('done');}
+  function sw(el){el.classList.toggle('on');}
+  function play(el){var p=el.querySelector('.pl');
+    if(p){ if(p.textContent==='▶'){p.textContent='❚❚';toast('正在播放…（原型演示）');} else p.textContent='▶'; }
+    else toast('正在播放…（原型演示）'); }
+  function voicePick(){toast('正在听您说…（演示识别：我要听相声）');
+    setTimeout(function(){toast('已为您找到：相声·卖布头 ▶');},1000);}
+  function peace(){bump();toast('已向家人报平安 ✓');}
+  function showCheck(){document.getElementById('modal').classList.add('show');}
+  function modalOk(){document.getElementById('modal').classList.remove('show');bump();toast('太好了，已记录您平安');}
+  function modalHelp(){document.getElementById('modal').classList.remove('show');toast('已向家人发送求助！');}
+  function svc(name){ toast('已提交【'+name+'】，已通知子女跟进 ✓'); }
+
+  tick(); setInterval(tick,1000);
+</script>
+</body>
+</html>

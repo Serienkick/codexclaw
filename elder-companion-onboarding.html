@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>暖伴 · 用户分类与信息收集（原型 v1）</title>
+<style>
+  :root{
+    --bg:#FFF8F0; --card:#FFFFFF; --ink:#2B2B2B; --ink2:#6B6B6B;
+    --warm:#FF8A3D; --warm-soft:#FFE9D6;
+    --green:#2E9E83; --green-soft:#DCF3EC;
+    --blue:#3D83C2; --blue-soft:#DCEBFA;
+    --red:#E5484D;
+    --gold:#E0A23B;
+    --radius:24px; --shadow:0 8px 24px rgba(0,0,0,.08);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  body{margin:0;font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+    background:#E9E4DC;color:var(--ink);display:flex;justify-content:center;padding:16px;}
+  .phone{width:100%;max-width:430px;background:var(--bg);border-radius:36px;
+    box-shadow:0 20px 60px rgba(0,0,0,.25);overflow:hidden;min-height:880px;position:relative;}
+  .topbar{display:flex;justify-content:space-between;align-items:center;
+    padding:18px 24px 6px;font-size:18px;color:var(--ink2);font-weight:600;}
+  .view{display:none;padding:8px 22px 34px;}
+  .view.active{display:block;animation:fade .25s ease;}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .steps{display:flex;justify-content:center;gap:8px;margin:10px 0 20px;}
+  .steps .dot{width:10px;height:10px;border-radius:50%;background:#E2DccF;transition:.2s;}
+  .steps .dot.on{background:var(--warm);width:28px;border-radius:999px;}
+  .steps .dot.done{background:var(--green);}
+
+  .logo{text-align:center;margin:24px 0 8px;}
+  .logo .em{font-size:64px;}
+  .logo .nm{font-size:30px;font-weight:800;margin-top:6px;}
+  .logo .ds{font-size:19px;color:var(--ink2);margin-top:6px;line-height:1.5;}
+  .big-btn{width:100%;border:none;border-radius:var(--radius);padding:24px;font-size:24px;
+    font-weight:800;color:#fff;box-shadow:var(--shadow);cursor:pointer;margin-top:14px;}
+  .big-btn.warm{background:var(--warm);} .big-btn.blue{background:var(--blue);}
+  .big-btn:active{transform:scale(.98);}
+
+  .role-card{background:var(--card);border:3px solid transparent;border-radius:var(--radius);
+    padding:24px;box-shadow:var(--shadow);cursor:pointer;margin-bottom:16px;transition:.15s;}
+  .role-card:active{transform:scale(.98);}
+  .role-card.sel{border-color:var(--warm);}
+  .role-card .ri{font-size:52px;}
+  .role-card .rt{font-size:26px;font-weight:800;margin-top:8px;}
+  .role-card .rd{font-size:17px;color:var(--ink2);margin-top:4px;line-height:1.5;}
+
+  .q{font-size:22px;font-weight:800;margin:18px 4px 8px;}
+  .field{margin-bottom:16px;}
+  .field label{display:block;font-size:18px;font-weight:700;margin-bottom:8px;color:var(--ink2);}
+  .field input,.field select{width:100%;border:2px solid #E6E0D6;border-radius:16px;
+    padding:16px;font-size:20px;font-family:inherit;outline:none;background:#fff;}
+  .field input:focus,.field select:focus{border-color:var(--warm);}
+  .seg{display:flex;gap:10px;}
+  .seg .o{flex:1;text-align:center;border:2px solid #E6E0D6;border-radius:16px;padding:14px;
+    font-size:19px;font-weight:700;cursor:pointer;color:var(--ink2);}
+  .seg .o.on{background:var(--warm-soft);color:var(--warm);border-color:var(--warm);}
+
+  .success{text-align:center;padding:20px 0;}
+  .success .chk{width:90px;height:90px;border-radius:50%;background:var(--green-soft);color:var(--green);
+    display:flex;align-items:center;justify-content:center;font-size:50px;margin:0 auto;}
+  .success .st{font-size:26px;font-weight:800;margin-top:16px;}
+  .success .ss{font-size:18px;color:var(--ink2);margin-top:6px;line-height:1.5;}
+  .tag-role{display:inline-block;margin-top:14px;padding:8px 20px;border-radius:999px;
+    font-size:20px;font-weight:800;}
+  .tag-role.elder{background:var(--warm-soft);color:var(--warm);}
+  .tag-role.child{background:var(--blue-soft);color:var(--blue);}
+  .profile{background:var(--card);border-radius:20px;padding:20px;box-shadow:var(--shadow);
+    margin:18px 0;text-align:left;}
+  .profile .ph{font-size:20px;font-weight:800;margin-bottom:10px;}
+  .profile .pr{display:flex;justify-content:space-between;font-size:18px;padding:6px 0;
+    border-bottom:1px solid #F0EAE0;}
+  .profile .pr:last-child{border-bottom:none;}
+  .profile .pr .pk{color:var(--ink2);} .profile .pr .pv{font-weight:700;}
+  .link{display:block;text-align:center;color:var(--blue);font-weight:800;font-size:18px;
+    margin-top:16px;cursor:pointer;}
+
+  .db-row{background:var(--card);border-radius:18px;padding:16px;box-shadow:var(--shadow);margin-bottom:12px;}
+  .db-row .dn{font-size:21px;font-weight:800;display:flex;align-items:center;gap:8px;}
+  .db-row .dm{font-size:16px;color:var(--ink2);margin-top:6px;line-height:1.5;}
+  .badge{font-size:14px;font-weight:800;padding:3px 12px;border-radius:999px;}
+
+  .schema{background:#2B2B2B;color:#E8E3DA;border-radius:18px;padding:18px;margin-top:16px;
+    font-family:"SFMono-Regular",Consolas,monospace;font-size:13px;line-height:1.6;overflow-x:auto;}
+  .schema .c{color:#9CDCFE;} .schema .k{color:#FFB86C;} .schema .s{color:#C3E88D;}
+  .note{font-size:15px;color:var(--ink2);line-height:1.6;margin-top:14px;background:var(--warm-soft);
+    border-radius:16px;padding:16px;}
+
+  .toast{position:absolute;left:50%;bottom:40px;transform:translateX(-50%) translateY(20px);
+    background:rgba(43,43,43,.94);color:#fff;font-size:19px;font-weight:700;padding:14px 24px;
+    border-radius:999px;opacity:0;pointer-events:none;transition:.25s;max-width:90%;text-align:center;z-index:30;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  .foot{text-align:center;color:var(--ink2);font-size:14px;margin-top:16px;}
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="topbar"><span>暖伴 · 用户建档</span><span id="clock">--:--</span></div>
+
+  <!-- 欢迎 -->
+  <section class="view active" id="welcome">
+    <div class="logo"><div class="em">🤝</div><div class="nm">暖伴</div>
+      <div class="ds">先认识一下您，<br>才好为您把功能调得刚刚好</div></div>
+    <button class="big-btn warm" onclick="go('role')">开始 ›</button>
+    <div class="note">📌 这一步会收集您的身份与基础信息，用于：① 区分<b>老人端 / 子女端</b> ② 以后对接真实数据库（微信云开发）。现在用本地存储演示，字段已按真实库设计。</div>
+    <div class="foot">用户分类与信息采集原型 v1</div>
+  </section>
+
+  <!-- 角色选择 -->
+  <section class="view" id="role">
+    <div class="steps"><div class="dot on"></div><div class="dot"></div><div class="dot"></div></div>
+    <div class="q">您是哪位？我来为您安排对应的界面</div>
+    <div class="role-card" id="rcElder" onclick="selRole('elder')">
+      <div class="ri">👴</div><div class="rt">我是长辈，自己用</div>
+      <div class="rd">大字界面、语音播报、一键求助，把提醒和娱乐送到手边</div>
+    </div>
+    <div class="role-card" id="rcChild" onclick="selRole('child')">
+      <div class="ri">👧</div><div class="rt">我是子女，照顾爸妈</div>
+      <div class="rd">远程看板、异常推送、替爸妈设提醒，安心不盯也能顾</div>
+    </div>
+  </section>
+
+  <!-- 表单 -->
+  <section class="view" id="form">
+    <div class="steps"><div class="dot done"></div><div class="dot on"></div><div class="dot"></div></div>
+    <div class="q" id="formTitle">填写信息</div>
+
+    <!-- 老人表单 -->
+    <div id="formElder">
+      <div class="field"><label>怎么称呼您 *</label><input id="e_nick" placeholder="如：王爷爷"></div>
+      <div class="field"><label>年龄 *</label><input id="e_age" type="number" placeholder="如：82"></div>
+      <div class="field"><label>性别</label>
+        <div class="seg" id="e_seg"><div class="o on" onclick="seg(this)">男</div><div class="o" onclick="seg(this)">女</div></div></div>
+      <div class="field"><label>所在城市</label><input id="e_city" placeholder="如：荆州"></div>
+      <div class="field"><label>有在吃降压药等慢病药吗？</label>
+        <div class="seg" id="e_chronic"><div class="o on" onclick="seg(this)">有</div><div class="o" onclick="seg(this)">没有</div><div class="o" onclick="seg(this)">不清楚</div></div></div>
+      <div class="field"><label>有智能手环吗？</label>
+        <div class="seg" id="e_band"><div class="o" onclick="seg(this)">有</div><div class="o on" onclick="seg(this)">还没有</div></div></div>
+      <div class="field"><label>紧急联系人（子女）称呼 / 电话</label><input id="e_emo" placeholder="如：小敏 / 138xxxx"></div>
+    </div>
+
+    <!-- 子女表单 -->
+    <div id="formChild" style="display:none">
+      <div class="field"><label>怎么称呼您 *</label><input id="c_nick" placeholder="如：小敏"></div>
+      <div class="field"><label>您和老人的关系</label>
+        <div class="seg" id="c_rel"><div class="o on" onclick="seg(this)">女儿</div><div class="o" onclick="seg(this)">儿子</div><div class="o" onclick="seg(this)">孙辈</div><div class="o" onclick="seg(this)">其他</div></div></div>
+      <div class="field"><label>所在城市</label><input id="c_city" placeholder="如：武汉"></div>
+      <div class="field"><label>要照顾几位老人？</label>
+        <div class="seg" id="c_cnt"><div class="o on" onclick="seg(this)">1 位</div><div class="o" onclick="seg(this)">2 位</div><div class="o" onclick="seg(this)">3 位+</div></div></div>
+      <div class="field"><label>老人称呼 / 年龄</label><input id="c_elder" placeholder="如：父亲王爷爷 / 82"></div>
+      <div class="field"><label>是否愿意为远程守护付费？</label>
+        <div class="seg" id="c_pay"><div class="o on" onclick="seg(this)">愿意</div><div class="o" onclick="seg(this)">考虑中</div><div class="o" onclick="seg(this)">暂不需要</div></div></div>
+    </div>
+
+    <button class="big-btn warm" onclick="submit()">✓ 提交建档</button>
+    <div class="link" onclick="go('role')">‹ 重新选择身份</div>
+  </section>
+
+  <!-- 完成 -->
+  <section class="view" id="done">
+    <div class="steps"><div class="dot done"></div><div class="dot done"></div><div class="dot done"></div></div>
+    <div class="success">
+      <div class="chk">✓</div>
+      <div class="st">建档成功！</div>
+      <div class="ss" id="doneSub">已为您分类并存入用户档案</div>
+      <div class="tag-role" id="roleTag">—</div>
+    </div>
+    <div class="profile" id="profileBox"></div>
+    <button class="big-btn blue" onclick="go('db')">🗄 查看已收集的用户（数据库演示）</button>
+    <div class="link" onclick="resetAll()">清空演示数据，重新建档</div>
+  </section>
+
+  <!-- 数据库演示 -->
+  <section class="view" id="db">
+    <div class="q">🗄 用户数据库（演示）</div>
+    <div id="dbList"></div>
+    <div class="note">💡 以上来自浏览器本地存储，模拟真实的 <b>users 集合</b>。正式版将写入<b>微信云开发数据库</b>，结构完全一致（见下方 schema）。</div>
+    <div class="schema">
+<span class="c">// users 集合（微信云开发 / 通用）</span>
+{
+  <span class="k">userId</span>: <span class="s">"openid_xxx"</span>,
+  <span class="k">role</span>: <span class="s">"elder" | "child"</span>,   <span class="c">// 角色分类（核心）</span>
+  <span class="k">profile</span>: { nickname, age, gender, city },
+  <span class="k">device</span>: { hasBand: <span class="s">bool</span> },      <span class="c">// 老人</span>
+  <span class="k">health</span>: { chronic: <span class="s">"有|无|不清楚"</span> }, <span class="c">// 老人</span>
+  <span class="k">caregiver</span>: {                       <span class="c">// 子女</span>
+    relation, careCount,
+    elders: [{ name, age }],
+    willingPay: <span class="s">"yes|maybe|no"</span>
+  },
+  <span class="k">emergencyContact</span>: { name, phone },
+  <span class="k">createdAt</span>: <span class="s">"2026-08-01..."</span>,
+  <span class="k">source</span>: <span class="s">"onboarding"</span>
+}
+    </div>
+    <div class="link" onclick="go('welcome')">‹ 返回首页</div>
+  </section>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+  var DB_KEY='warmban_users';
+  var role='';
+  function pad(n){return n<10?'0'+n:n;}
+  function tick(){var d=new Date(),h=d.getHours(),m=d.getMinutes();
+    var ap=h<12?'上午':(h<18?'下午':'晚上');
+    document.getElementById('clock').textContent=ap+' '+h+':'+pad(m);}
+  function go(id){document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+    document.getElementById(id).classList.add('active');window.scrollTo(0,0);}
+  function seg(el){var g=el.parentElement;g.querySelectorAll('.o').forEach(o=>o.classList.remove('on'));
+    el.classList.add('on');}
+  function selRole(r){role=r;
+    document.getElementById('rcElder').classList.toggle('sel',r==='elder');
+    document.getElementById('rcChild').classList.toggle('sel',r==='child');
+    document.getElementById('formElder').style.display=r==='elder'?'block':'none';
+    document.getElementById('formChild').style.display=r==='child'?'block':'none';
+    document.getElementById('formTitle').textContent=r==='elder'?'👴 长辈信息':'👧 子女信息';
+    go('form');}
+  function getSeg(id){var o=document.querySelector('#'+id+' .o.on');return o?o.textContent.trim():'';}
+  function submit(){
+    var rec={createdAt:new Date().toISOString(),source:'onboarding',role:role};
+    if(role==='elder'){
+      var nick=document.getElementById('e_nick').value.trim();
+      var age=document.getElementById('e_age').value.trim();
+      if(!nick||!age){toast('称呼和年龄要填一下哦');return;}
+      rec.profile={nickname:nick,age:Number(age),gender:getSeg('e_seg'),city:document.getElementById('e_city').value.trim()||'未填'};
+      rec.device={hasBand:getSeg('e_band')==='有'};
+      rec.health={chronic:getSeg('e_chronic')};
+      rec.emergencyContact={name:document.getElementById('e_emo').value.trim()||'未填'};
+    }else{
+      var cnick=document.getElementById('c_nick').value.trim();
+      if(!cnick){toast('先告诉我怎么称呼您');return;}
+      rec.profile={nickname:cnick,city:document.getElementById('c_city').value.trim()||'未填'};
+      rec.caregiver={
+        relation:getSeg('c_rel'),
+        careCount:getSeg('c_cnt'),
+        elders:[{name:document.getElementById('c_elder').value.trim()||'未填'}],
+        willingPay:getSeg('c_pay')
+      };
+    }
+    var arr=JSON.parse(localStorage.getItem(DB_KEY)||'[]');
+    arr.push(rec);localStorage.setItem(DB_KEY,JSON.stringify(arr));
+    showDone(rec);
+    go('done');
+  }
+  function showDone(rec){
+    var isElder=rec.role==='elder';
+    var tag=document.getElementById('roleTag');
+    tag.className='tag-role '+(isElder?'elder':'child');
+    tag.textContent=isElder?'分类：老人端 👴':'分类：子女端 👧';
+    document.getElementById('doneSub').textContent=isElder
+      ? '已归入「老人端」，将启用大字/语音/求助界面'
+      : '已归入「子女端」，将启用远程看板/推送';
+    var b=document.getElementById('profileBox');var h='<div class="ph">📇 您的档案</div>';
+    h+='<div class="pr"><span class="pk">身份</span><span class="pv">'+(isElder?'长辈':'子女')+'</span></div>';
+    h+='<div class="pr"><span class="pk">称呼</span><span class="pv">'+rec.profile.nickname+'</span></div>';
+    if(isElder){
+      h+='<div class="pr"><span class="pk">年龄</span><span class="pv">'+rec.profile.age+'</span></div>';
+      h+='<div class="pr"><span class="pk">城市</span><span class="pv">'+rec.profile.city+'</span></div>';
+      h+='<div class="pr"><span class="pk">慢病用药</span><span class="pv">'+rec.health.chronic+'</span></div>';
+      h+='<div class="pr"><span class="pk">有手环</span><span class="pv">'+(rec.device.hasBand?'有':'无')+'</span></div>';
+      h+='<div class="pr"><span class="pk">紧急联系人</span><span class="pv">'+rec.emergencyContact.name+'</span></div>';
+    }else{
+      h+='<div class="pr"><span class="pk">关系</span><span class="pv">'+rec.caregiver.relation+'</span></div>';
+      h+='<div class="pr"><span class="pk">照顾人数</span><span class="pv">'+rec.caregiver.careCount+'</span></div>';
+      h+='<div class="pr"><span class="pk">老人</span><span class="pv">'+rec.caregiver.elders[0].name+'</span></div>';
+      h+='<div class="pr"><span class="pk">付费意愿</span><span class="pv">'+rec.caregiver.willingPay+'</span></div>';
+    }
+    b.innerHTML=h;
+  }
+  function renderDB(){
+    var arr=JSON.parse(localStorage.getItem(DB_KEY)||'[]');
+    var box=document.getElementById('dbList');
+    if(!arr.length){box.innerHTML='<div class="note">还没有收集到用户，去首页建一个吧。</div>';return;}
+    box.innerHTML=arr.map(function(r,i){
+      var isE= r.role==='elder';
+      var b=isE?'background:var(--warm-soft);color:var(--warm)':'background:var(--blue-soft);color:var(--blue)';
+      var info=isE?('年龄 '+r.profile.age+' · '+r.profile.city+' · 慢病:'+r.health.chronic)
+                   :('关系 '+r.caregiver.relation+' · 照顾 '+r.caregiver.careCount+' · 付费:'+r.caregiver.willingPay);
+      return '<div class="db-row"><div class="dn">'+r.profile.nickname+
+        ' <span class="badge" style="'+b+'">'+(isE?'老人端':'子女端')+'</span></div>'+
+        '<div class="dm">'+info+'</div></div>';
+    }).join('');
+  }
+  function resetAll(){localStorage.removeItem(DB_KEY);toast('演示数据已清空');go('welcome');}
+  // 进入 db 视图时刷新列表
+  var _go=go; go=function(id){_go(id); if(id==='db') renderDB();};
+  var t;function toast(m){var el=document.getElementById('toast');el.textContent=m;el.classList.add('show');
+    clearTimeout(t);t=setTimeout(()=>el.classList.remove('show'),1900);}
+  tick();setInterval(tick,1000);
+</script>
+</body>
+</html>

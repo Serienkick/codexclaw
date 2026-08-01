@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>暖伴 · 真实家庭试用指南</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; background: #faf6f0; color: #3a352e; line-height: 1.6; padding: 24px; }
+  .wrap { max-width: 820px; margin: 0 auto; }
+  header { background: linear-gradient(135deg, #f0997b, #e8a87c); color: #fff; border-radius: 16px; padding: 24px; margin-bottom: 20px; }
+  header h1 { font-size: 22px; font-weight: 600; }
+  header p { font-size: 14px; opacity: 0.95; margin-top: 8px; }
+  .goal { background: #fff; border-radius: 12px; padding: 16px 20px; margin-bottom: 16px; border-left: 5px solid #e8a87c; }
+  .goal b { color: #c0563a; }
+  .card { background: #fff; border-radius: 12px; padding: 20px; margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+  .card h2 { font-size: 17px; margin-bottom: 12px; color: #5a4636; display: flex; align-items: center; gap: 8px; }
+  .card.elder h2 { color: #c0563a; }
+  .card.child h2 { color: #185fa5; }
+  .task { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; border-bottom: 1px dashed #eee; }
+  .task:last-child { border-bottom: none; }
+  .task input[type=checkbox] { width: 18px; height: 18px; margin-top: 3px; accent-color: #e8a87c; flex-shrink: 0; }
+  .task .txt { font-size: 14px; }
+  .task .sub { font-size: 12px; color: #999; margin-top: 2px; }
+  .rec-row { display: flex; gap: 10px; padding: 8px 0; font-size: 14px; align-items: center; }
+  .rec-row label { width: 90px; color: #888; flex-shrink: 0; }
+  .rec-row input, .rec-row textarea { flex: 1; border: 1px solid #ddd; border-radius: 8px; padding: 8px; font-size: 14px; font-family: inherit; }
+  .rec-row textarea { resize: vertical; min-height: 44px; }
+  .questions { font-size: 14px; }
+  .questions li { margin: 8px 0 8px 20px; }
+  .btn { display: block; width: 100%; background: #e8a87c; color: #fff; border: none; border-radius: 12px; padding: 14px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 8px; }
+  .btn:active { transform: scale(0.99); }
+  .out { background: #2c2c2a; color: #eee; border-radius: 12px; padding: 16px; font-size: 13px; white-space: pre-wrap; font-family: monospace; margin-top: 12px; display: none; }
+  .tip { font-size: 12px; color: #999; margin-top: 10px; }
+  .files { font-size: 13px; background: #fdf3ea; border-radius: 8px; padding: 10px 14px; margin-top: 10px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>暖伴 · 真实家庭试用指南</h1>
+    <p>目标：验证"老人会不会用、子女愿不愿付费"，不是验证技术。暑假内荆州找 3–5 个家庭试。</p>
+  </header>
+
+  <div class="goal">
+    <b>试之前先记住三句话：</b><br>
+    ① 让老人/子女自己戳，你只观察、少帮忙；<br>
+    ② 重点记"卡住的地方"和"他们说的原话"，比打分数值钱；<br>
+    ③ 不解释、不推销，看真实第一反应。
+  </div>
+
+  <div class="card">
+    <h2>📦 出门前准备</h2>
+    <div class="files">
+      带上这两个原型文件（手机或平板打开）：<br>
+      · <b>elder-standalone.html</b> —— 给老人戳（首页/提醒/娱乐/休息/安全）<br>
+      · <b>child-standalone.html</b> —— 给子女看（看板/消息/照顾/会员）<br>
+      另备：纸笔、可录音的手机（经同意）、小礼物答谢。
+    </div>
+  </div>
+
+  <div class="card elder">
+    <h2>👴 老人端 · 任务清单（请老人独立完成）</h2>
+    <div class="task"><input type="checkbox"><div class="txt">认出首页三个大图标（提醒/娱乐/休息）<div class="sub">观察：犹豫几秒？有没有问"点哪个"？</div></div></div>
+    <div class="task"><input type="checkbox"><div class="txt">按一下「一键求助 / SOS」<div class="sub">观察：按钮够不够大、敢不敢按、有没有被吓到</div></div></div>
+    <div class="task"><input type="checkbox"><div class="txt">在提醒页勾选"已吃药"<div class="sub">观察：勾选顺不顺手、字够不够大</div></div></div>
+    <div class="task"><input type="checkbox"><div class="txt">进娱乐页，直接点「智能推荐」播放<div class="sub">观察：会不会一进来就直接播（零选择是否成立）</div></div></div>
+    <div class="task"><input type="checkbox"><div class="txt">点「念给我听」语音播报<div class="sub">观察：手机出不出声、老人怕不怕语音</div></div></div>
+    <div class="task"><input type="checkbox"><div class="txt">理解顶部「🛡️ 守护中」状态条<div class="sub">观察：他懂不懂"自己正在被保护"</div></div></div>
+  </div>
+
+  <div class="card child">
+    <h2>👧 子女端 · 任务清单（请子女独立完成）</h2>
+    <div class="task"><input type="checkbox"><div class="txt">看懂看板：爸妈今天吃药没、最后活跃几点<div class="sub">观察：一眼看懂吗？哪里看不懂？</div></div></div>
+    <div class="task"><input type="checkbox"><div class="txt">点「模拟收到求助推送」，看红色告警<div class="sub">观察：这个"爸妈一按我就收到"的闭环打不打动他</div></div></div>
+    <div class="task"><input type="checkbox"><div class="txt">翻到会员页，看四档套餐<div class="sub">观察：愿不愿意为"安心"按月付费？心理价位？</div></div></div>
+    <div class="task"><input type="checkbox"><div class="txt">在照顾页写一条留言/设置用药提醒<div class="sub">观察：远程"投喂"功能感不感兴趣</div></div></div>
+  </div>
+
+  <div class="card">
+    <h2>📝 观察记录（每位测试对象填一份）</h2>
+    <div class="rec-row"><label>对象角色</label><input id="r_role" placeholder="老人 / 子女"></div>
+    <div class="rec-row"><label>年龄</label><input id="r_age" placeholder="如 82"></div>
+    <div class="rec-row"><label>卡住的点</label><textarea id="r_stuck" placeholder="他卡在哪一步、说了什么原话"></textarea></div>
+    <div class="rec-row"><label>最打动/最嫌弃</label><textarea id="r_feel" placeholder="哪个功能让他眼睛亮 / 哪个觉得多余"></textarea></div>
+    <div class="rec-row"><label>付费意愿</label><input id="r_pay" placeholder="愿意¥?/月 或 暂不需要，原因"></div>
+  </div>
+
+  <div class="card">
+    <h2>💬 结尾开口问（每人 3 句）</h2>
+    <ul class="questions">
+      <li>"今天哪个功能你觉得最有用？"</li>
+      <li>"有没有哪个地方让你不知道点哪、或者觉得麻烦？"</li>
+      <li>（问子女）"如果每月花二三十块，有人替你远程看顾爸妈，你愿意吗？"</li>
+    </ul>
+    <div class="tip">提示：多听少说，他们吐槽的每句话都是下一步该改的需求。</div>
+  </div>
+
+  <button class="btn" onclick="genReport()">生成反馈摘要（复制给杰尼龟）</button>
+  <div class="out" id="out"></div>
+</div>
+
+<script>
+function genReport() {
+  const g = id => (document.getElementById(id).value || "").trim();
+  const checks = document.querySelectorAll('.task input');
+  let done = 0; checks.forEach(c => { if (c.checked) done++; });
+  const report =
+"【暖伴试用反馈】\n" +
+"角色：" + (g('r_role')||"未填") + "  年龄：" + (g('r_age')||"未填") + "\n" +
+"完成任务：" + done + " / " + checks.length + " 项\n" +
+"卡住的点：" + (g('r_stuck')||"（无）") + "\n" +
+"最打动/最嫌弃：" + (g('r_feel')||"（无）") + "\n" +
+"付费意愿：" + (g('r_pay')||"（未问）") + "\n";
+  const out = document.getElementById('out');
+  out.textContent = report;
+  out.style.display = 'block';
+  if (navigator.clipboard) navigator.clipboard.writeText(report);
+}
+</script>
+</body>
+</html>
