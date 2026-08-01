@@ -48,7 +48,9 @@
   .steps .dot.on{background:var(--warm);width:28px;border-radius:999px;}
   .steps .dot.done{background:var(--green);}
   .logo{text-align:center;margin:24px 0 8px;}
-  .logo .em{font-size:64px;} .logo .nm{font-size:30px;font-weight:800;margin-top:6px;}
+  .logo .em{font-size:64px;cursor:pointer;user-select:none;transition:transform .12s;}
+  .logo .em.tap{transform:scale(.82);}
+  .logo .nm{font-size:30px;font-weight:800;margin-top:6px;}
   .logo .ds{font-size:19px;color:var(--ink2);margin-top:6px;line-height:1.5;}
   .big-btn{width:100%;border:none;border-radius:var(--radius);padding:24px;font-size:24px;
     font-weight:800;color:#fff;box-shadow:var(--shadow);cursor:pointer;margin-top:14px;}
@@ -765,13 +767,15 @@
   }
   function resetAll(){localStorage.removeItem(DB_KEY);toast('演示数据已清空');go('welcome');}
 
-  /* 开发者后台：隐蔽入口（间断连点首页 Logo 7 次解锁） */
+  /* 开发者后台：隐蔽入口（间断连点首页 Logo 5 次解锁，8 秒窗口容错） */
   var devTaps=0, devTimer=null;
   function devTap(){
+    var em=document.getElementById('logoEm');
+    if(em){ em.classList.add('tap'); setTimeout(function(){em.classList.remove('tap');},120); }
     devTaps++;
     if(devTimer) clearTimeout(devTimer);
-    devTimer=setTimeout(function(){devTaps=0;},3000); // 3 秒窗口内累计，允许间断点击
-    if(devTaps>=7){ devTaps=0; clearTimeout(devTimer); renderDB(); go('devDb'); toast('🔓 开发者后台已解锁'); }
+    devTimer=setTimeout(function(){devTaps=0;},8000); // 放宽到 8 秒，适配"间断点击"
+    if(devTaps>=5){ devTaps=0; clearTimeout(devTimer); renderDB(); go('devDb'); toast('🔓 开发者后台已解锁'); }
   }
 
   tick(); setInterval(tick,1000);
