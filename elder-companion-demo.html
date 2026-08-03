@@ -309,6 +309,23 @@
     <div class="foot">暖伴 · 完整演示 Demo</div>
   </section>
 
+  <!-- 切换账号 / 重新建档：先选已有或新建 -->
+  <section class="view" id="accountPick">
+    <div class="logo"><div class="em">🤝</div><div class="nm">暖伴</div>
+      <div class="ds">欢迎回来，<br>请选择如何继续</div></div>
+    <div class="role-card" onclick="pickExisting()">
+      <div class="ri">📂</div><div class="rt">选择已有账号</div>
+      <div class="rd">登录您之前创建过的账号</div></div>
+    <div class="role-card" onclick="createNew()">
+      <div class="ri">✨</div><div class="rt">创建新账号</div>
+      <div class="rd">重新填写信息，开启全新体验</div></div>
+    <div id="existingWrap" style="display:none;margin-top:18px">
+      <div class="sec-t">📇 已有账号</div>
+      <div id="existingList"></div>
+      <div class="link" onclick="hideExisting()">‹ 返回</div>
+    </div>
+  </section>
+
   <!-- 角色 -->
   <section class="view" id="role">
     <div class="steps"><div class="dot on"></div><div class="dot"></div><div class="dot"></div></div>
@@ -374,7 +391,7 @@
       <div class="mod" onclick="go('rest')"><div class="ico">😴</div><div class="name">休息</div><div class="desc">养精神</div></div>
       <div class="mod" onclick="go('safety')"><div class="ico">🛡️</div><div class="name">安全</div><div class="desc">实时守护</div></div>
     </div>
-    <div class="link" onclick="go('welcome')">⟳ 重新建档 / 切换账号</div>
+    <div class="link" onclick="go('accountPick')">⟳ 重新建档 / 切换账号</div>
     <div class="foot">暖伴 · 老人端原型</div>
   </section>
 
@@ -470,7 +487,7 @@
       <div class="as">用药依从率 90%、异常 1 次已确认安全、活动量偏少建议多散步。点开看完整解读 →</div>
       <div class="ab">查看报告</div></div>
     <button class="sim" onclick="pushDemo()">⚡ 演示：模拟收到一条实时推送</button>
-    <div class="link" onclick="go('welcome')">⟳ 重新建档 / 切换账号</div>
+    <div class="link" onclick="go('accountPick')">⟳ 重新建档 / 切换账号</div>
   </section>
 
   <section class="view" id="msgs">
@@ -725,6 +742,49 @@
     var arr=JSON.parse(localStorage.getItem(DB_KEY)||'[]');
     arr.push(rec); localStorage.setItem(DB_KEY,JSON.stringify(arr));
     showDone(rec); go('done');
+  }
+  /* 切换账号 / 重新建档：先选已有或新建 */
+  function pickExisting(){
+    var arr=JSON.parse(localStorage.getItem(DB_KEY)||'[]');
+    if(!arr.length){ toast('还没有已有账号，请创建新账号'); return; }
+    var box=document.getElementById('existingList'); box.innerHTML='';
+    arr.forEach(function(u,i){
+      var isE=u.role==='elder';
+      var nick=(u.profile&&u.profile.nickname)||'用户'+(i+1);
+      var div=document.createElement('div');
+      div.className='role-card';
+      div.innerHTML='<div class="ri">'+(isE?'👴':'👧')+'</div><div class="rt">'+nick+'</div><div class="rd">'+(isE?'长辈账号':'子女账号')+'</div>';
+      div.onclick=function(){ enterExisting(u); };
+      box.appendChild(div);
+    });
+    document.getElementById('existingWrap').style.display='block';
+  }
+  function hideExisting(){ document.getElementById('existingWrap').style.display='none'; }
+  function enterExisting(u){
+    role=u.role||'elder';
+    curNick=(u.profile&&u.profile.nickname)||'';
+    hideExisting();
+    if(role==='elder'){
+      document.getElementById('elGreet').textContent=curNick+'，您好 👴';
+      go('home');
+    }else{
+      var elder=u.caregiver&&u.caregiver.elders&&u.caregiver.elders[0]&&u.caregiver.elders[0].name;
+      if(elder) document.getElementById('chElderName').textContent=elder.split('/')[0].trim()||'王爷爷';
+      document.getElementById('topRight').textContent='👧 子女端·'+curNick;
+      go('board');
+    }
+    toast('已登录：'+curNick);
+  }
+  function createNew(){
+    /* 清空之前填写的内容 */
+    ['e_nick','e_age','e_city','e_emo','c_nick','c_city','c_elder'].forEach(function(id){
+      var el=document.getElementById(id); if(el) el.value='';
+    });
+    document.querySelectorAll('.seg').forEach(function(seg){
+      seg.querySelectorAll('.o').forEach(function(o,idx){ o.classList.toggle('on',idx===0); });
+    });
+    role='';
+    go('role');
   }
   function showDone(rec){
     var isElder=rec.role==='elder';

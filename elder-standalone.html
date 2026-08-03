@@ -287,10 +287,27 @@
     <div class="foot">便民服务为真实服务对接，由子女端统一管理进度</div>
   </section>
 
-  <!-- 重新选择身份（退出后） -->
+  <!-- 切换账号 / 重新建档：先选已有或新建 -->
   <section class="view" id="reselect">
-    <div class="logo"><div class="em">🤝</div><div class="nm">重新选择身份</div>
-      <div class="ds">换个身份，<br>暖伴会为您切换到对应界面</div></div>
+    <div class="logo"><div class="em">🤝</div><div class="nm">切换账号</div>
+      <div class="ds">请选择如何继续，<br>暖伴会为您切换到对应界面</div></div>
+    <div class="role-card" onclick="pickExisting()">
+      <div class="ri">📂</div><div class="rt">选择已有账号</div>
+      <div class="rd">登录您之前创建过的账号</div></div>
+    <div class="role-card" onclick="createNew()">
+      <div class="ri">✨</div><div class="rt">创建新账号</div>
+      <div class="rd">重新填写信息，开启全新体验</div></div>
+    <div id="existingWrap" style="display:none;margin-top:18px">
+      <div class="sec-t">📇 已有账号</div>
+      <div id="existingList"></div>
+      <div class="link" onclick="hideExisting()">‹ 返回</div>
+    </div>
+  </section>
+
+  <!-- 创建新账号：选择身份 -->
+  <section class="view" id="reselectRole">
+    <div class="logo"><div class="em">🤝</div><div class="nm">创建新账号</div>
+      <div class="ds">选好身份，<br>暖伴会为您打开对应界面</div></div>
     <div class="role-card" onclick="reselectRole('elder')"><div class="ri">👴</div><div class="rt">我是长辈，自己用</div>
       <div class="rd">大字界面、语音播报、一键求助</div></div>
     <div class="role-card" onclick="reselectRole('child')"><div class="ri">👧</div><div class="rt">我是子女，照顾爸妈</div>
@@ -329,7 +346,7 @@
     document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
     document.getElementById(id).classList.add('active');
     syncTab(id);
-    document.getElementById('tabbar').style.display = (id==='reselect')?'none':'';
+    document.getElementById('tabbar').style.display = (id==='reselect'||id==='reselectRole')?'none':'';
     window.scrollTo(0,0); bump();
   }
   function tab(id,el){
@@ -392,6 +409,32 @@
   function confirmExit(){document.getElementById('exitModal').classList.add('show');}
   function closeExit(){document.getElementById('exitModal').classList.remove('show');}
   function doExit(){document.getElementById('exitModal').classList.remove('show');go('reselect');}
+
+  /* 切换账号 / 重新建档：先选已有或新建 */
+  function pickExisting(){
+    var arr=JSON.parse(localStorage.getItem('warmban_users')||'[]');
+    if(!arr.length){ toast('还没有已有账号，请创建新账号'); return; }
+    var box=document.getElementById('existingList'); box.innerHTML='';
+    arr.forEach(function(u,i){
+      var isE=u.role==='elder';
+      var nick=(u.profile&&u.profile.nickname)||'用户'+(i+1);
+      var div=document.createElement('div');
+      div.className='role-card';
+      div.innerHTML='<div class="ri">'+(isE?'👴':'👧')+'</div><div class="rt">'+nick+'</div><div class="rd">'+(isE?'长辈账号':'子女账号')+'</div>';
+      div.onclick=function(){ enterExisting(u); };
+      box.appendChild(div);
+    });
+    document.getElementById('existingWrap').style.display='block';
+  }
+  function hideExisting(){ document.getElementById('existingWrap').style.display='none'; }
+  function enterExisting(u){
+    hideExisting();
+    if(u.role==='child'){ toast('请打开「暖伴·子女端」App'); return; }
+    toast('已登录：'+((u.profile&&u.profile.nickname)||'账号'));
+    go('home');
+  }
+  function createNew(){ go('reselectRole'); }
+
   function reselectRole(r){
     if(r==='elder'){go('home');toast('已进入长辈界面');}
     else {toast('请打开「暖伴·子女端」App');}
