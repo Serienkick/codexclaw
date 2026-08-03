@@ -131,14 +131,15 @@
       <div class="field"><label>怎么称呼您 *</label><input id="e_nick" placeholder="如：王爷爷"></div>
       <div class="field"><label>年龄 *（填 20 到 200 之间）</label><input id="e_age" type="number" min="20" max="200" placeholder="如：82" oninput="validateAge(this)">
         <div id="e_age_warn" style="display:none;color:#D64545;font-size:15px;margin-top:6px;">⚠️ 年龄要在 20 到 200 岁之间哦</div></div>
-      <div class="field"><label>性别</label><div class="seg" id="e_seg"><div class="o on" onclick="seg(this)">男</div><div class="o" onclick="seg(this)">女</div></div></div>
+      <div class="field"><label>性别</label><div class="seg" id="e_seg"><div class="o" onclick="seg(this)">男</div><div class="o" onclick="seg(this)">女</div><div class="o on" onclick="seg(this)">不清楚</div></div></div>
       <div class="field"><label>您住在哪个村 / 镇 / 县</label>
         <div style="display:flex;gap:8px;">
           <input id="e_city" placeholder="如：李家村 / 城关镇" style="flex:1;">
           <button type="button" onclick="gpsLoc('e_city')" style="flex:0 0 auto;white-space:nowrap;padding:0 14px;border:none;border-radius:12px;background:#E8F0E8;color:#2F6B3A;font-size:16px;font-weight:700;">📍 定位自动填</button>
         </div>
+        <div style="color:#6B7A6E;font-size:14px;margin-top:8px;line-height:1.5;">请填写您所在的村、镇或县，方便我们为您就近推荐便民服务与活动；不会填也可点 📍 自动定位。</div>
       </div>
-      <div class="field"><label>有在吃降压药等慢病药吗？</label><div class="seg" id="e_chronic"><div class="o on" onclick="seg(this)">有</div><div class="o" onclick="seg(this)">没有</div><div class="o" onclick="seg(this)">不清楚</div></div></div>
+      <div class="field"><label>您平时需要服用降压药等慢性病药物吗？</label><div class="seg" id="e_chronic"><div class="o" onclick="seg(this)">有</div><div class="o" onclick="seg(this)">没有</div><div class="o on" onclick="seg(this)">不清楚</div></div></div>
       <div class="field"><label>有智能手环吗？</label><div class="seg" id="e_band"><div class="o" onclick="seg(this)">有</div><div class="o on" onclick="seg(this)">还没有</div></div></div>
       <div class="field"><label>紧急联系人（子女）称呼</label><input id="e_emo_name" placeholder="如：小敏"></div>
       <div class="field"><label>紧急联系人电话</label><input id="e_emo_phone" placeholder="11 位手机号，以 1 开头" maxlength="11" inputmode="numeric" oninput="validatePhone(this)">
