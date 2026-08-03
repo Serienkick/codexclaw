@@ -129,15 +129,20 @@
     <!-- 老人表单 -->
     <div id="formElder">
       <div class="field"><label>怎么称呼您 *</label><input id="e_nick" placeholder="如：王爷爷"></div>
-      <div class="field"><label>年龄 *</label><input id="e_age" type="number" placeholder="如：82"></div>
-      <div class="field"><label>性别</label>
-        <div class="seg" id="e_seg"><div class="o on" onclick="seg(this)">男</div><div class="o" onclick="seg(this)">女</div></div></div>
-      <div class="field"><label>所在城市</label><input id="e_city" placeholder="如：荆州"></div>
-      <div class="field"><label>有在吃降压药等慢病药吗？</label>
-        <div class="seg" id="e_chronic"><div class="o on" onclick="seg(this)">有</div><div class="o" onclick="seg(this)">没有</div><div class="o" onclick="seg(this)">不清楚</div></div></div>
-      <div class="field"><label>有智能手环吗？</label>
-        <div class="seg" id="e_band"><div class="o" onclick="seg(this)">有</div><div class="o on" onclick="seg(this)">还没有</div></div></div>
-      <div class="field"><label>紧急联系人（子女）称呼 / 电话</label><input id="e_emo" placeholder="如：小敏 / 138xxxx"></div>
+      <div class="field"><label>年龄 *（填 20 到 200 之间）</label><input id="e_age" type="number" min="20" max="200" placeholder="如：82" oninput="validateAge(this)">
+        <div id="e_age_warn" style="display:none;color:#D64545;font-size:15px;margin-top:6px;">⚠️ 年龄要在 20 到 200 岁之间哦</div></div>
+      <div class="field"><label>性别</label><div class="seg" id="e_seg"><div class="o on" onclick="seg(this)">男</div><div class="o" onclick="seg(this)">女</div></div></div>
+      <div class="field"><label>您住在哪个村 / 镇 / 县</label>
+        <div style="display:flex;gap:8px;">
+          <input id="e_city" placeholder="如：李家村 / 城关镇" style="flex:1;">
+          <button type="button" onclick="gpsLoc('e_city')" style="flex:0 0 auto;white-space:nowrap;padding:0 14px;border:none;border-radius:12px;background:#E8F0E8;color:#2F6B3A;font-size:16px;font-weight:700;">📍 定位自动填</button>
+        </div>
+      </div>
+      <div class="field"><label>有在吃降压药等慢病药吗？</label><div class="seg" id="e_chronic"><div class="o on" onclick="seg(this)">有</div><div class="o" onclick="seg(this)">没有</div><div class="o" onclick="seg(this)">不清楚</div></div></div>
+      <div class="field"><label>有智能手环吗？</label><div class="seg" id="e_band"><div class="o" onclick="seg(this)">有</div><div class="o on" onclick="seg(this)">还没有</div></div></div>
+      <div class="field"><label>紧急联系人（子女）称呼</label><input id="e_emo_name" placeholder="如：小敏"></div>
+      <div class="field"><label>紧急联系人电话</label><input id="e_emo_phone" placeholder="11 位手机号，以 1 开头" maxlength="11" inputmode="numeric" oninput="validatePhone(this)">
+        <div id="e_emo_warn" style="display:none;color:#D64545;font-size:15px;margin-top:6px;">⚠️ 请填 11 位、以 1 开头的手机号</div></div>
     </div>
 
     <!-- 子女表单 -->
@@ -145,7 +150,12 @@
       <div class="field"><label>怎么称呼您 *</label><input id="c_nick" placeholder="如：小敏"></div>
       <div class="field"><label>您和老人的关系</label>
         <div class="seg" id="c_rel"><div class="o on" onclick="seg(this)">女儿</div><div class="o" onclick="seg(this)">儿子</div><div class="o" onclick="seg(this)">孙辈</div><div class="o" onclick="seg(this)">其他</div></div></div>
-      <div class="field"><label>所在城市</label><input id="c_city" placeholder="如：武汉"></div>
+      <div class="field"><label>您住在哪个城市 / 区县</label>
+        <div style="display:flex;gap:8px;">
+          <input id="c_city" placeholder="如：武汉 / 某某区" style="flex:1;">
+          <button type="button" onclick="gpsLoc('c_city')" style="flex:0 0 auto;white-space:nowrap;padding:0 14px;border:none;border-radius:12px;background:#E8F0E8;color:#2F6B3A;font-size:16px;font-weight:700;">📍 定位</button>
+        </div>
+      </div>
       <div class="field"><label>要照顾几位老人？</label>
         <div class="seg" id="c_cnt"><div class="o on" onclick="seg(this)">1 位</div><div class="o" onclick="seg(this)">2 位</div><div class="o" onclick="seg(this)">3 位+</div></div></div>
       <div class="field"><label>老人称呼 / 年龄</label><input id="c_elder" placeholder="如：父亲王爷爷 / 82"></div>
@@ -219,16 +229,40 @@
     document.getElementById('formTitle').textContent=r==='elder'?'👴 长辈信息':'👧 子女信息';
     go('form');}
   function getSeg(id){var o=document.querySelector('#'+id+' .o.on');return o?o.textContent.trim():'';}
+  function validateAge(el){
+    var v=Number(el.value); var w=document.getElementById('e_age_warn');
+    if(el.value!=='' && (isNaN(v)||v<20||v>200)){ w.style.display='block'; } else { w.style.display='none'; }
+  }
+  function validatePhone(el){
+    el.value=el.value.replace(/\D/g,'').slice(0,11);
+    var w=document.getElementById('e_emo_warn');
+    if(el.value!=='' && el.value.charAt(0)!=='1'){ w.style.display='block'; } else { w.style.display='none'; }
+  }
+  function gpsLoc(id){
+    var input=document.getElementById(id);
+    if(!navigator.geolocation){ toast('此设备不支持定位，请手动填写村名'); return; }
+    toast('正在定位…');
+    navigator.geolocation.getCurrentPosition(function(p){
+      var lat=p.coords.latitude.toFixed(4), lng=p.coords.longitude.toFixed(4);
+      input.value='GPS定位：'+lat+', '+lng; toast('✓ 已自动填入您的位置');
+    },function(err){ toast('没拿到定位，您手动填一下村名吧'); },{enableHighAccuracy:false,timeout:8000});
+  }
   function submit(){
     var rec={createdAt:new Date().toISOString(),source:'onboarding',role:role};
     if(role==='elder'){
       var nick=document.getElementById('e_nick').value.trim();
       var age=document.getElementById('e_age').value.trim();
       if(!nick||!age){toast('称呼和年龄要填一下哦');return;}
-      rec.profile={nickname:nick,age:Number(age),gender:getSeg('e_seg'),city:document.getElementById('e_city').value.trim()||'未填'};
+      var av=Number(age);
+      if(isNaN(av)||av<20||av>200){toast('年龄要在 20 到 200 岁之间哦');document.getElementById('e_age').focus();return;}
+      var phone=document.getElementById('e_emo_phone').value.trim();
+      if(phone!==''){
+        if(phone.length!==11||phone.charAt(0)!=='1'){toast('紧急联系人电话要 11 位、以 1 开头哦');document.getElementById('e_emo_phone').focus();return;}
+      }
+      rec.profile={nickname:nick,age:av,gender:getSeg('e_seg'),city:document.getElementById('e_city').value.trim()||'未填'};
       rec.device={hasBand:getSeg('e_band')==='有'};
       rec.health={chronic:getSeg('e_chronic')};
-      rec.emergencyContact={name:document.getElementById('e_emo').value.trim()||'未填'};
+      rec.emergencyContact={name:document.getElementById('e_emo_name').value.trim()||'未填',phone:phone||'未填'};
     }else{
       var cnick=document.getElementById('c_nick').value.trim();
       if(!cnick){toast('先告诉我怎么称呼您');return;}
