@@ -1,0 +1,134 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 840" width="680" height="840" role="img" aria-labelledby="ttl desc" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif">
+  <title id="ttl">CodexClaw 架构总览</title>
+  <desc id="desc">五层结构：公网入口、CodexClaw 编排层、Codex App-Server 执行层、llama-server 本地推理、持久化状态。两条回环：敏感操作审批回到用户，记忆与技能蒸馏写回状态并在下一轮注入。</desc>
+
+  <defs>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#94a3b8"/>
+    </marker>
+    <marker id="arWarn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#f59e0b"/>
+    </marker>
+    <marker id="arVio" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#8b5cf6"/>
+    </marker>
+  </defs>
+
+  <rect x="6" y="6" width="668" height="828" rx="16" fill="#ffffff" stroke="#e2e8f0"/>
+
+  <!-- header -->
+  <rect x="32" y="30" width="5" height="38" rx="2.5" fill="#2563eb"/>
+  <text x="48" y="52" font-size="23" font-weight="700" fill="#0f172a">CodexClaw</text>
+  <text x="48" y="72" font-size="12.5" fill="#64748b">离线私有化 AI Agent · 架构总览</text>
+
+  <!-- public network row -->
+  <text x="32" y="102" font-size="11" fill="#94a3b8" letter-spacing="1.5">公 网</text>
+
+  <rect x="72" y="112" width="200" height="44" rx="9" fill="#eff6ff" stroke="#bfdbfe"/>
+  <text x="88" y="132" font-size="13.5" font-weight="600" fill="#1e40af">QQ 客户端</text>
+  <text x="88" y="148" font-size="11" fill="#3b82f6">手机 · 平板 · 指令入口</text>
+
+  <line x1="276" y1="134" x2="298" y2="134" stroke="#94a3b8" stroke-width="1.4" marker-end="url(#ar)"/>
+
+  <rect x="306" y="112" width="200" height="44" rx="9" fill="#eff6ff" stroke="#bfdbfe"/>
+  <text x="322" y="132" font-size="13.5" font-weight="600" fill="#1e40af">QQ 开放平台</text>
+  <text x="322" y="148" font-size="11" fill="#3b82f6">Gateway · WebSocket</text>
+
+  <text x="524" y="128" font-size="11" fill="#94a3b8">整条链路里</text>
+  <text x="524" y="144" font-size="11" fill="#94a3b8">唯一出网的一段</text>
+
+  <!-- offline boundary -->
+  <rect x="36" y="176" width="608" height="614" rx="14" fill="#f8fafc" stroke="#cbd5e1" stroke-dasharray="6 5"/>
+  <rect x="52" y="166" width="114" height="22" rx="11" fill="#2563eb"/>
+  <text x="109" y="181" font-size="11.5" font-weight="600" fill="#ffffff" text-anchor="middle">本机 · 全离线</text>
+
+  <!-- entry row -->
+  <text x="72" y="210" font-size="11" fill="#94a3b8">① 入口</text>
+
+  <rect x="72" y="218" width="240" height="46" rx="9" fill="#ecfeff" stroke="#a5f3fc"/>
+  <text x="88" y="239" font-size="12.5" font-weight="600" fill="#0e7490" font-family="ui-monospace, SFMono-Regular, Consolas, monospace">codex-claw chat</text>
+  <text x="88" y="255" font-size="11" fill="#0891b2">终端对话 · 不起 QQ 网关</text>
+
+  <rect x="368" y="218" width="240" height="46" rx="9" fill="#ecfeff" stroke="#a5f3fc"/>
+  <text x="384" y="239" font-size="13.5" font-weight="600" fill="#0e7490">QQ 机器人</text>
+  <text x="384" y="255" font-size="11" fill="#0891b2">私聊 · 群 · 需自备凭据</text>
+
+  <line x1="406" y1="158" x2="406" y2="214" stroke="#94a3b8" stroke-width="1.4" marker-end="url(#ar)"/>
+  <line x1="192" y1="266" x2="192" y2="284" stroke="#94a3b8" stroke-width="1.4" marker-end="url(#ar)"/>
+  <line x1="488" y1="266" x2="488" y2="284" stroke="#94a3b8" stroke-width="1.4" marker-end="url(#ar)"/>
+
+  <!-- orchestration -->
+  <rect x="72" y="288" width="536" height="104" rx="12" fill="#f5f3ff" stroke="#ddd6fe"/>
+  <text x="90" y="312" font-size="14" font-weight="700" fill="#5b21b6">② CodexClaw · 编排层</text>
+  <text x="90" y="328" font-size="11" fill="#7c3aed">Rust · 决定「谁、在什么时候、让 Codex 干什么」</text>
+
+  <rect x="89" y="344" width="79" height="30" rx="7" fill="#ede9fe" stroke="#ddd6fe"/>
+  <text x="128.5" y="363" font-size="12" fill="#5b21b6" text-anchor="middle">会话管理</text>
+  <rect x="174" y="344" width="79" height="30" rx="7" fill="#ede9fe" stroke="#ddd6fe"/>
+  <text x="213.5" y="363" font-size="12" fill="#5b21b6" text-anchor="middle">审批流</text>
+  <rect x="259" y="344" width="79" height="30" rx="7" fill="#ede9fe" stroke="#ddd6fe"/>
+  <text x="298.5" y="363" font-size="12" fill="#5b21b6" text-anchor="middle">定时任务</text>
+  <rect x="344" y="344" width="79" height="30" rx="7" fill="#ede9fe" stroke="#ddd6fe"/>
+  <text x="383.5" y="363" font-size="12" fill="#5b21b6" text-anchor="middle">记忆蒸馏</text>
+  <rect x="429" y="344" width="79" height="30" rx="7" fill="#ede9fe" stroke="#ddd6fe"/>
+  <text x="468.5" y="363" font-size="12" fill="#5b21b6" text-anchor="middle">技能索引</text>
+  <rect x="514" y="344" width="79" height="30" rx="7" fill="#ede9fe" stroke="#ddd6fe"/>
+  <text x="553.5" y="363" font-size="12" fill="#5b21b6" text-anchor="middle">提示词组装</text>
+
+  <line x1="340" y1="394" x2="340" y2="408" stroke="#94a3b8" stroke-width="1.4" marker-end="url(#ar)"/>
+  <text x="350" y="406" font-size="10" fill="#94a3b8" font-family="ui-monospace, SFMono-Regular, Consolas, monospace">JSON-RPC</text>
+
+  <!-- execution -->
+  <rect x="72" y="412" width="536" height="108" rx="12" fill="#ecfdf5" stroke="#a7f3d0"/>
+  <text x="90" y="436" font-size="14" font-weight="700" fill="#065f46">③ Codex App-Server · 执行层</text>
+  <text x="90" y="452" font-size="11" fill="#059669">真实操作本机 · 每个动作都可被拦截审批</text>
+
+  <rect x="89" y="468" width="120" height="30" rx="7" fill="#d1fae5" stroke="#a7f3d0"/>
+  <text x="149" y="487" font-size="11.5" fill="#065f46" text-anchor="middle">shell 命令</text>
+  <rect x="217" y="468" width="120" height="30" rx="7" fill="#d1fae5" stroke="#a7f3d0"/>
+  <text x="277" y="487" font-size="11.5" fill="#065f46" text-anchor="middle">文件读写</text>
+  <rect x="345" y="468" width="120" height="30" rx="7" fill="#d1fae5" stroke="#a7f3d0"/>
+  <text x="405" y="487" font-size="10.5" fill="#065f46" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Consolas, monospace">computer-use</text>
+  <rect x="473" y="468" width="120" height="30" rx="7" fill="#d1fae5" stroke="#a7f3d0"/>
+  <text x="533" y="487" font-size="11.5" fill="#065f46" text-anchor="middle">沙箱与审批</text>
+
+  <line x1="340" y1="522" x2="340" y2="536" stroke="#94a3b8" stroke-width="1.4" marker-end="url(#ar)"/>
+  <text x="350" y="534" font-size="10" fill="#94a3b8" font-family="ui-monospace, SFMono-Regular, Consolas, monospace">/v1</text>
+
+  <!-- brain -->
+  <rect x="72" y="540" width="536" height="88" rx="12" fill="#fffbeb" stroke="#fde68a"/>
+  <text x="90" y="564" font-size="14" font-weight="700" fill="#92400e">④ llama-server · 本地推理</text>
+  <text x="90" y="584" font-size="11.5" fill="#b45309" font-family="ui-monospace, SFMono-Regular, Consolas, monospace">Gemma-4-E4B · Q4_K_M · 7.5B · CPU · 兼容 OpenAI /v1</text>
+  <text x="90" y="604" font-size="11" fill="#b45309">换大脑只改一个 base_url，上下两层都不用动</text>
+
+  <rect x="466" y="552" width="126" height="26" rx="13" fill="#fef3c7" stroke="#fcd34d"/>
+  <text x="529" y="569" font-size="11" font-weight="600" fill="#92400e" text-anchor="middle">无云端模型依赖</text>
+
+  <!-- state -->
+  <rect x="72" y="648" width="536" height="100" rx="12" fill="#f1f5f9" stroke="#cbd5e1"/>
+  <text x="90" y="672" font-size="14" font-weight="700" fill="#334155">⑤ 持久化状态</text>
+  <text x="90" y="688" font-size="11" fill="#64748b">纯文件 · 整目录拷走就能换台机器接着聊</text>
+
+  <rect x="89" y="700" width="120" height="30" rx="7" fill="#e2e8f0" stroke="#cbd5e1"/>
+  <text x="149" y="719" font-size="10.5" fill="#334155" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Consolas, monospace">memory/*.md</text>
+  <rect x="217" y="700" width="120" height="30" rx="7" fill="#e2e8f0" stroke="#cbd5e1"/>
+  <text x="277" y="719" font-size="10.5" fill="#334155" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Consolas, monospace">sessions</text>
+  <rect x="345" y="700" width="120" height="30" rx="7" fill="#e2e8f0" stroke="#cbd5e1"/>
+  <text x="405" y="719" font-size="10.5" fill="#334155" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Consolas, monospace">skills/claw-*</text>
+  <rect x="473" y="700" width="120" height="30" rx="7" fill="#e2e8f0" stroke="#cbd5e1"/>
+  <text x="533" y="719" font-size="10.5" fill="#334155" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Consolas, monospace">AGENTS.md</text>
+
+  <!-- loops -->
+  <path d="M72 466 L46 466 L46 134 L66 134" fill="none" stroke="#f59e0b" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#arWarn)"/>
+  <path d="M608 698 L636 698 L636 340 L614 340" fill="none" stroke="#8b5cf6" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#arVio)"/>
+
+  <text x="72" y="770" font-size="11" fill="#94a3b8">除了 ① 的 QQ 收发，②③④⑤ 全部在本机——模型推理不出一分钱 API 费，也不上传任何上下文。</text>
+
+  <!-- legend -->
+  <line x1="72" y1="812" x2="104" y2="812" stroke="#94a3b8" stroke-width="1.4"/>
+  <text x="112" y="816" font-size="11" fill="#64748b">调用 / 数据流</text>
+  <line x1="228" y1="812" x2="260" y2="812" stroke="#f59e0b" stroke-width="1.4" stroke-dasharray="5 4"/>
+  <text x="268" y="816" font-size="11" fill="#64748b">审批回环：敏感操作先问你</text>
+  <line x1="444" y1="812" x2="476" y2="812" stroke="#8b5cf6" stroke-width="1.4" stroke-dasharray="5 4"/>
+  <text x="484" y="816" font-size="11" fill="#64748b">记忆回环：写回并注入下一轮</text>
+</svg>
